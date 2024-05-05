@@ -1,6 +1,31 @@
 part of 'categories_bloc.dart';
 
-@immutable
-abstract class CategoriesState {}
+class CategoriesState extends Equatable {
+  final CategoriesStatus status;
+  final List<CategoryModel> listCategories;
 
-class CategoriesInitial extends CategoriesState {}
+  const CategoriesState._({
+    required this.listCategories,
+    required this.status,
+  });
+
+  factory CategoriesState.initial() {
+    return const CategoriesState._(
+      listCategories: [],
+      status: CategoriesStatus.initial,
+    );
+  }
+
+  CategoriesState copyWith({
+    List<CategoryModel>? listCategories,
+    CategoriesStatus? status,
+  }) {
+    return CategoriesState._(
+      listCategories: listCategories ?? this.listCategories,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  List<Object?> get props => [listCategories, status];
+}

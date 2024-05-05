@@ -1,3 +1,4 @@
+import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,9 @@ Future<void> init() async {
   final talker = TalkerFlutter.init();
   getIt.registerSingleton(talker);
   getIt<Talker>().info('Application started...');
+
+  // Регистрация блоков
+  getIt.registerLazySingleton<CategoriesBloc>(() => CategoriesBloc());
 
   //Talker bloc logger
   Bloc.observer = TalkerBlocObserver(

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/injection.dart';
-import 'package:finance/core/models/categoty_model.dart';
+import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +54,7 @@ class HomePage extends StatelessWidget {
                     CategoryModel model = CategoryModel(
                       name: 'First category',
                       balance: 1,
+                      childrenCategory: [],
                     );
 
                     DocumentReference? doc = await databaseService.addCategory(
@@ -72,6 +73,7 @@ class HomePage extends StatelessWidget {
                       parentCategoryUid: listSubCategories.isNotEmpty
                           ? listSubCategories.last.id
                           : listCategories.last.id,
+                      childrenCategory: [],
                     );
 
                     DocumentReference? doc = await databaseService.addCategory(
