@@ -1,7 +1,9 @@
+import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/user_model.dart';
 import 'package:finance/core/services/authentication_service.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/core/services/snack_bar_service.dart';
+import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -71,6 +73,8 @@ class _SignUpScreen extends State<SignUpScreen> {
 
         // Добавление пользователя в бд
         await databaseService.addUser(userModel);
+
+        getIt<CategoriesBloc>().add(CategoriesAddStartTemplateEvent(userUid: userCredential.user!.uid));
 
         navigator.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       }

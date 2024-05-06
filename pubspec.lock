@@ -517,6 +517,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  tree_view_flutter:
+    dependency: "direct main"
+    description:
+      name: tree_view_flutter
+      sha256: "3365e29b7d1b1e6c5098a2a0e77a208a12a9345dfa73865cb4c87657cf387801"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   typed_data:
     dependency: transitive
     description:

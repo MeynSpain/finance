@@ -14,5 +14,17 @@ class Globals {
   static const String name = 'name';
   static const String balance = 'balance';
   static const String parentCategoryUid = 'parentCategoryUid';
+
+
+  // Название категорий
+
+  static const String rent = 'Аренда';
+  static const String health = 'Здоровье';
+  static const String utilities = 'Коммунальные услуги';
+  static const String products = 'Продукты';
+  static const String subscribes = 'Подписки';
+  static const String leisure = 'Досуг';
+  static const String transport = 'Транспорт';
+
 }
 

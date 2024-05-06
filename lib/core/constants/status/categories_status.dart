@@ -2,6 +2,9 @@ enum CategoriesStatus {
   initial,
   error,
   errorCategoryNotAdded,
+  errorGettingAllCategories,
+  errorAddingStartTemplate,
+
   creatingCategory,
   addingCategory,
   addedCategory,
@@ -9,4 +12,6 @@ enum CategoriesStatus {
   gettingAllCategories,
   allCategoriesReceived,
 
+  addingStartTemplate,
+  startTemplateAdded,
 }

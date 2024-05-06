@@ -20,6 +20,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   CategoriesBloc() : super(CategoriesState.initial()) {
     on<CategoriesAddingCategoryEvent>(_addingCategory);
     on<CategoriesGetAllCategoriesEvent>(_getAllCategories);
+    on<CategoriesAddStartTemplateEvent>(_addStartTemplate);
   }
 
   /// Добавление категории в базу данных
@@ -70,8 +71,47 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
+  /// Получить все категории
   Future<void> _getAllCategories(CategoriesGetAllCategoriesEvent event,
       Emitter<CategoriesState> emit) async {
+    emit(state.copyWith(
+      status: CategoriesStatus.gettingAllCategories,
+    ));
 
+    try {
+      List<CategoryModel> categories =
+          await databaseService.getAllCategories(event.userUid);
+
+      if (categories.isEmpty) {
+        getIt<Talker>().debug('Почему то пустые категории');
+      }
+
+      emit(state.copyWith(
+          status: CategoriesStatus.allCategoriesReceived,
+          listCategories: categories));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(status: CategoriesStatus.errorGettingAllCategories));
+    }
+  }
+
+  Future<void> _addStartTemplate(CategoriesAddStartTemplateEvent event,
+      Emitter<CategoriesState> emit) async {
+    emit(state.copyWith(
+      status: CategoriesStatus.addingStartTemplate,
+    ));
+
+    try {
+      CategoryModel startCategoryTemplate = await databaseService
+          .addStartCategoryTemplate(userUid: event.userUid);
+
+      emit(state.copyWith(
+        status: CategoriesStatus.startTemplateAdded,
+        listCategories: [startCategoryTemplate],
+      ));
+
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+    }
   }
 }

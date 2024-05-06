@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/constants/globals.dart';
+import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/user_model.dart';
 
@@ -97,17 +98,64 @@ class DatabaseService {
       listCategories.removeAt(index);
     }
 
+    print(listCategories);
+
     return listCategories;
   }
 
-  Future<void> getCategory(
-      {required String categoryId, required String userUid}) async {
-    final docRef = await db.collection(Globals.users).doc(userUid);
-    final snapshot = await docRef
-        .collection(Globals.categories)
-        .where(FieldPath.documentId, isEqualTo: categoryId)
+  Future<CategoryModel?> getCategory(
+      {required String categoryUid, required String userUid}) async {
+    final querySnapshot = await db
+        .collectionGroup(Globals.categories)
+        .where(FieldPath.documentId, isEqualTo: categoryUid)
+        .where(Globals.userUid, isEqualTo: userUid)
         .get();
 
-    print(snapshot);
+    CategoryModel? category;
+    for (var doc in querySnapshot.docs) {
+      category = CategoryModel.fromMap(doc.data());
+    }
+
+    // final snapshot = await docRef
+    //     .collection(Globals.categories)
+    //     .where(FieldPath.documentId, isEqualTo: categoryId)
+    //     .get();
+
+    // print(category);
+
+    return category;
+  }
+
+  Future<CategoryModel> addStartCategoryTemplate(
+      {required String userUid}) async {
+    CategoryModel startTemplate = Templates.getStartCategoryTemplate(
+        name: 'Личный баланс', userUid: userUid);
+
+    DocumentReference docCategoryRef = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.categories)
+        .doc();
+
+    startTemplate.uid = docCategoryRef.id;
+
+    await docCategoryRef.set(startTemplate.toMap());
+
+    startTemplate.childrenCategory.forEach((childCategory) async {
+      childCategory.parentCategoryUid = startTemplate.uid;
+      DocumentReference docChildCategoryRef = db
+          .collection(Globals.users)
+          .doc(userUid)
+          .collection(Globals.categories)
+          .doc(startTemplate.uid)
+          .collection(Globals.categories)
+          .doc();
+
+      childCategory.uid = docChildCategoryRef.id;
+
+      await docChildCategoryRef.set(childCategory.toMap());
+    });
+
+    return startTemplate;
   }
 }

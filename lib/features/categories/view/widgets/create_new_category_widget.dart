@@ -1,10 +1,12 @@
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/models/category_model.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewCategoryWidget extends StatefulWidget {
-  const CreateNewCategoryWidget({super.key});
+  const CreateNewCategoryWidget({super.key, this.parentCategory});
+  final CategoryModel? parentCategory;
 
   @override
   State<CreateNewCategoryWidget> createState() =>
@@ -52,6 +54,7 @@ class _CreateNewCategoryWidgetState extends State<CreateNewCategoryWidget> {
                             CategoriesAddingCategoryEvent(
                               name: text,
                               userUid: FirebaseAuth.instance.currentUser!.uid,
+                              parentCategory: widget.parentCategory,
                             ),
                           );
                         }

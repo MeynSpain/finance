@@ -43,6 +43,7 @@ dependencies:
   talker_flutter: ^4.1.5
   talker_bloc_logger: ^4.1.5
   get_it: ^7.7.0
+  tree_view_flutter: ^1.0.2
 
 dev_dependencies:
   flutter_test:

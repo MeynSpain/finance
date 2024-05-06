@@ -26,3 +26,11 @@ class CategoriesGetAllCategoriesEvent extends CategoriesEvent {
 
   CategoriesGetAllCategoriesEvent({required this.userUid});
 }
+
+
+/// Создает шаблон начальных категорий
+class CategoriesAddStartTemplateEvent extends CategoriesEvent{
+  final String userUid;
+
+  CategoriesAddStartTemplateEvent({required this.userUid});
+}
