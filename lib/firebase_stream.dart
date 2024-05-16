@@ -1,6 +1,6 @@
 
 import 'package:finance/features/authentication/view/login_page.dart';
-import 'package:finance/features/home_page.dart';
+import 'package:finance/features/categories/view/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

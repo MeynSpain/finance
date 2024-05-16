@@ -17,8 +17,8 @@ class CategoriesState extends Equatable {
   }
 
   CategoriesState copyWith({
-    List<CategoryModel>? listCategories,
     CategoriesStatus? status,
+    List<CategoryModel>? listCategories,
   }) {
     return CategoriesState._(
       listCategories: listCategories ?? this.listCategories,
@@ -27,5 +27,5 @@ class CategoriesState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [listCategories, status];
+  List<Object?> get props => [status, listCategories];
 }

@@ -9,48 +9,56 @@ class Templates {
       userUid: userUid,
       name: name,
       balance: 0,
+      transactions: [],
       childrenCategory: [
         CategoryModel(
           balance: 0,
           name: Globals.rent,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.health,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.utilities,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.subscribes,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.products,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.leisure,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
         CategoryModel(
           balance: 0,
           name: Globals.transport,
           userUid: userUid,
           childrenCategory: [],
+          transactions: [],
         ),
       ]
     );

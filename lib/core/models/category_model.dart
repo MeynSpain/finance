@@ -1,12 +1,16 @@
+import 'package:equatable/equatable.dart';
 import 'package:finance/core/constants/globals.dart';
 
-class CategoryModel {
+import 'transaction_model.dart';
+
+class CategoryModel extends Equatable {
   String? uid;
   String? userUid;
   String? name;
   int? balance;
   String? parentCategoryUid;
   List<CategoryModel> childrenCategory = [];
+  List<TransactionModel>? transactions;
 
   CategoryModel(
       {this.uid,
@@ -14,7 +18,8 @@ class CategoryModel {
       this.name,
       this.balance,
       this.parentCategoryUid,
-      required this.childrenCategory});
+      required this.childrenCategory,
+      this.transactions});
 
   Map<String, dynamic> toMap() {
     return {
@@ -23,6 +28,8 @@ class CategoryModel {
       Globals.name: name,
       Globals.balance: balance,
       Globals.parentCategoryUid: parentCategoryUid,
+      Globals.transactions:
+          transactions?.map((transaction) => transaction.toMap()).toList(),
       // 'childrenCategory':
       //     childrenCategory?.map((child) => child.toMap()).toList(),
     };
@@ -35,11 +42,26 @@ class CategoryModel {
 
   factory CategoryModel.fromMap(Map<String, dynamic> mapData) {
     return CategoryModel(
-        uid: mapData[Globals.uid],
-        userUid: mapData[Globals.userUid],
-        name: mapData[Globals.name],
-        balance: mapData[Globals.balance],
-        parentCategoryUid: mapData[Globals.parentCategoryUid],
-        childrenCategory: []);
+      uid: mapData[Globals.uid],
+      userUid: mapData[Globals.userUid],
+      name: mapData[Globals.name],
+      balance: mapData[Globals.balance],
+      parentCategoryUid: mapData[Globals.parentCategoryUid],
+      childrenCategory: [],
+      transactions: (mapData?[Globals.transactions] as List<dynamic>)
+          .map((transaction) => TransactionModel.fromMap(transaction))
+          .toList(),
+    );
   }
+
+  @override
+  List<Object?> get props => [
+        uid,
+        userUid,
+        name,
+        balance,
+        parentCategoryUid,
+        childrenCategory,
+        transactions
+      ];
 }

@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/category_model.dart';
+import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:meta/meta.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -21,6 +22,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesAddingCategoryEvent>(_addingCategory);
     on<CategoriesGetAllCategoriesEvent>(_getAllCategories);
     on<CategoriesAddStartTemplateEvent>(_addStartTemplate);
+    on<CategoriesAddTransactionEvent>(_addTransaction);
+    on<CategoriesUpdateBalanceEvent>(_updateBalance);
   }
 
   /// Добавление категории в базу данных
@@ -38,6 +41,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         userUid: event.userUid,
         parentCategoryUid: event.parentCategory?.uid,
         childrenCategory: [],
+        transactions: [],
       );
 
       // Добавление категории в бд
@@ -109,9 +113,52 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         status: CategoriesStatus.startTemplateAdded,
         listCategories: [startCategoryTemplate],
       ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+    }
+  }
+
+  Future<void> _addTransaction(CategoriesAddTransactionEvent event,
+      Emitter<CategoriesState> emit) async {
+
+    emit(state.copyWith(
+      status: CategoriesStatus.addingTransaction,
+    ));
+
+    try {
+      CategoryModel categoryModel = await databaseService.addTransaction(
+          event.transactionModel, event.parentCategoryOfTransaction);
+
+      // int indexOfCurrentCategory = state.listCategories.indexWhere((element) => element.uid == categoryModel.uid);
+
+      // state.listCategories[indexOfCurrentCategory] = categoryModel;
+
+      emit(state.copyWith(
+        status: CategoriesStatus.transactionAdded,
+        listCategories: state.listCategories,
+      ));
 
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
+    }
+  }
+
+  Future<void> _updateBalance(
+      CategoriesUpdateBalanceEvent event, Emitter<CategoriesState> emit) async {
+    emit(state.copyWith(
+      status: CategoriesStatus.updatingBalance,
+    ));
+
+    try {
+      await databaseService.updateBalance(event.categoryModel, event.newBalance);
+      emit(state.copyWith(
+        status: CategoriesStatus.balanceUpdated,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.error,
+      ));
     }
   }
 }

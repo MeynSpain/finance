@@ -2,17 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/models/category_model.dart';
+import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/models/user_model.dart';
 
 class DatabaseService {
+  /// Экземпляр FirebaseFirestore
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
+  /// Добавить пользователя в БД.
   Future<void> addUser(UserModel userModel) async {
     await db
         .collection(Globals.users)
         .doc(userModel.uid)
         .set(userModel.toMap());
-    // return documentReference;
   }
 
   /// Добавление категории в БД.
@@ -81,6 +83,7 @@ class DatabaseService {
     });
 
     List<int> listChildrenIndexes = [];
+
     for (int i = 0; i < listCategories.length; i++) {
       // Смотрим наличие с полем parentCategoryUid
       if (listCategories[i].parentCategoryUid != null) {
@@ -99,6 +102,8 @@ class DatabaseService {
     }
 
     print(listCategories);
+
+
 
     return listCategories;
   }
@@ -126,6 +131,7 @@ class DatabaseService {
     return category;
   }
 
+  /// Создает и добавляет в базу данных шаблон начальных категорий
   Future<CategoryModel> addStartCategoryTemplate(
       {required String userUid}) async {
     CategoryModel startTemplate = Templates.getStartCategoryTemplate(
@@ -157,5 +163,66 @@ class DatabaseService {
     });
 
     return startTemplate;
+  }
+
+  Future<void> updateBalance(
+      CategoryModel categoryModel, int newBalance) async {
+
+    QuerySnapshot querySnapshot = await db
+        .collectionGroup(Globals.categories)
+        .where(Globals.uid, isEqualTo: categoryModel.uid)
+        .where(Globals.userUid, isEqualTo: categoryModel.userUid)
+        .get();
+
+    // categoryModel.balance += newBalance;
+
+    await querySnapshot.docs.first.reference.update({
+      Globals.balance: newBalance,
+    });
+
+
+  }
+
+  /// Добавляет транзакцию в бд
+  Future<CategoryModel> addTransaction(
+      TransactionModel transactionModel, CategoryModel parentCategory) async {
+    // parentCategory.transactions?.add(transactionModel);
+
+    QuerySnapshot querySnapshot = await db
+        .collectionGroup(Globals.categories)
+        .where(Globals.uid, isEqualTo: parentCategory.uid)
+        .where(Globals.userUid, isEqualTo: parentCategory.userUid)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      print('${doc.id} => ${doc.data()}');
+    }
+
+    QueryDocumentSnapshot doc = querySnapshot.docs.first;
+
+    await doc.reference.update({
+      Globals.balance: FieldValue.increment(transactionModel.amount),
+      Globals.transactions: FieldValue.arrayUnion([transactionModel.toMap()])
+    });
+
+    CategoryModel currentCategory =
+        CategoryModel.fromMap(doc.data() as Map<String, dynamic>);
+
+    while (currentCategory.parentCategoryUid != null) {
+      QuerySnapshot querySnapshot = await db
+          .collectionGroup(Globals.categories)
+          .where(Globals.uid, isEqualTo: currentCategory.parentCategoryUid)
+          .where(Globals.userUid, isEqualTo: currentCategory.userUid)
+          .get();
+
+      await querySnapshot.docs.first.reference.update({
+        Globals.balance: FieldValue.increment(transactionModel.amount),
+      });
+
+      currentCategory = CategoryModel.fromMap(
+          querySnapshot.docs.first.data() as Map<String, dynamic>);
+    }
+
+    return currentCategory;
   }
 }

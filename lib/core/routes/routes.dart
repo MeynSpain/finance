@@ -1,7 +1,7 @@
 import 'package:finance/features/authentication/view/login_page.dart';
 import 'package:finance/features/authentication/view/sign_up_page.dart';
 import 'package:finance/features/categories/view/pages/categories_page.dart';
-import 'package:finance/features/home_page.dart';
+import 'package:finance/features/categories/view/pages/home_page.dart';
 import 'package:finance/firebase_stream.dart';
 
 final routes = {

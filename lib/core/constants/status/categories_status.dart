@@ -1,5 +1,6 @@
 enum CategoriesStatus {
   initial,
+
   error,
   errorCategoryNotAdded,
   errorGettingAllCategories,
@@ -14,4 +15,10 @@ enum CategoriesStatus {
 
   addingStartTemplate,
   startTemplateAdded,
+
+  addingTransaction,
+  transactionAdded,
+
+  updatingBalance,
+  balanceUpdated,
 }
