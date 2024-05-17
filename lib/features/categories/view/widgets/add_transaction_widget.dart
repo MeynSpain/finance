@@ -8,9 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AddTransactionWidget extends StatefulWidget {
-  AddTransactionWidget({super.key, required this.categoryModel});
+  const AddTransactionWidget({
+    super.key,
+    // required this.rootCategoryUid,
+  });
 
-  final CategoryModel categoryModel;
+  // final String rootCategoryUid;
 
   @override
   State<AddTransactionWidget> createState() => _AddTransactionWidgetState();
@@ -57,23 +60,26 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                         String text = _textEditingController.text.trim();
 
                         if (text != '') {
-
                           TransactionModel transaction = TransactionModel(
-                            amount: int.parse(text),
-                            timestamp: Timestamp.now(),
-                            categoryUid: widget.categoryModel.uid,
-                            userUid: FirebaseAuth.instance.currentUser!.uid,
-                            description: 'Test description'
-                          );
+                              amount: int.parse(text),
+                              timestamp: Timestamp.now(),
+                              categoryUid: getIt<CategoriesBloc>()
+                                  .state
+                                  .currentCategory!
+                                  .uid,
+                              userUid: FirebaseAuth.instance.currentUser!.uid,
+                              description: 'Test description');
 
                           Navigator.of(context).pop();
-                          getIt<CategoriesBloc>().add(
-                              CategoriesAddTransactionEvent(
-                                  userUid:
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                  transactionModel: transaction,
-                                  parentCategoryOfTransaction:
-                                      widget.categoryModel));
+                          getIt<CategoriesBloc>()
+                              .add(CategoriesAddTransactionEvent(
+                            userUid: FirebaseAuth.instance.currentUser!.uid,
+                            transactionModel: transaction,
+                            rootCategoryUid: getIt<CategoriesBloc>()
+                                .state
+                                .currentCategory!
+                                .uid!,
+                          ));
                           // getIt<CategoriesBloc>().add(
                           //   CategoriesAddingCategoryEvent(
                           //     name: text,

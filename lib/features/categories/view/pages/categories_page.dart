@@ -82,7 +82,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           return BlocBuilder<CategoriesBloc, CategoriesState>(
               builder: (context, state) {
             return AddTransactionWidget(
-              categoryModel: currentCategory,
+              // categoryModel: currentCategory,
             );
           });
         });

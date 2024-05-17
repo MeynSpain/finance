@@ -28,8 +28,8 @@ class CategoryModel extends Equatable {
       Globals.name: name,
       Globals.balance: balance,
       Globals.parentCategoryUid: parentCategoryUid,
-      Globals.transactions:
-          transactions?.map((transaction) => transaction.toMap()).toList(),
+      // Globals.transactions:
+      //     transactions?.map((transaction) => transaction.toMap()).toList(),
       // 'childrenCategory':
       //     childrenCategory?.map((child) => child.toMap()).toList(),
     };
@@ -48,9 +48,9 @@ class CategoryModel extends Equatable {
       balance: mapData[Globals.balance],
       parentCategoryUid: mapData[Globals.parentCategoryUid],
       childrenCategory: [],
-      transactions: (mapData?[Globals.transactions] as List<dynamic>)
-          .map((transaction) => TransactionModel.fromMap(transaction))
-          .toList(),
+      // transactions: (mapData?[Globals.transactions] as List<dynamic>)
+      //     .map((transaction) => TransactionModel.fromMap(transaction))
+      //     .toList(),
     );
   }
 

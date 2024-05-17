@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/models/category_model.dart';
+import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/models/user_model.dart';
 
@@ -101,9 +102,7 @@ class DatabaseService {
       listCategories.removeAt(index);
     }
 
-    print(listCategories);
-
-
+    // print(listCategories);
 
     return listCategories;
   }
@@ -165,9 +164,22 @@ class DatabaseService {
     return startTemplate;
   }
 
+  Future<List<TagModel>> addTagsTemplate(String userUid) async {
+    List<TagModel> listTags = Templates.getStartTagsTemplate();
+
+    CollectionReference tagsCollectionReference =
+        db.collection(Globals.users).doc(userUid).collection(Globals.tags);
+
+    for (var tag in listTags) {
+      DocumentReference tagReference = tagsCollectionReference.doc();
+      tag.uid = tagReference.id;
+      await tagReference.set(tag.toMap());
+    }
+    return listTags;
+  }
+
   Future<void> updateBalance(
       CategoryModel categoryModel, int newBalance) async {
-
     QuerySnapshot querySnapshot = await db
         .collectionGroup(Globals.categories)
         .where(Globals.uid, isEqualTo: categoryModel.uid)
@@ -179,15 +191,62 @@ class DatabaseService {
     await querySnapshot.docs.first.reference.update({
       Globals.balance: newBalance,
     });
+  }
 
+  /// Добавление тега в БД
+  Future<void> addTag(TagModel tagModel, String userUid) async {
+    DocumentReference tagReference = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.tags)
+        .doc();
 
+    tagModel.uid = tagReference.id;
+
+    await tagReference.set(tagModel.toMap());
+  }
+
+  Future<List<TagModel>> getTags(String userUid) async {
+    List<TagModel> listTags = [];
+    QuerySnapshot querySnapshot = await db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.tags)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      print(doc.data());
+      listTags.add(
+          TagModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+
+    querySnapshot.docs.map((tagDocumentSnapshot) {
+      print(tagDocumentSnapshot.data());
+      listTags.add(
+          TagModel.fromMap(tagDocumentSnapshot.data() as Map<String, dynamic>));
+    });
+    return listTags;
   }
 
   /// Добавляет транзакцию в бд
-  Future<CategoryModel> addTransaction(
-      TransactionModel transactionModel, CategoryModel parentCategory) async {
+  Future<void> addTransaction(TransactionModel transactionModel,
+      String rootCategoryUid, String userUid) async {
     // parentCategory.transactions?.add(transactionModel);
 
+    DocumentReference transactionReference = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.categories)
+        .doc(rootCategoryUid)
+        .collection(Globals.transactions)
+        .doc();
+
+    transactionModel.uid = transactionReference.id;
+
+    transactionReference.set(transactionModel.toMap());
+
+    /// Осталось обновить балансы
+/*
     QuerySnapshot querySnapshot = await db
         .collectionGroup(Globals.categories)
         .where(Globals.uid, isEqualTo: parentCategory.uid)
@@ -224,5 +283,7 @@ class DatabaseService {
     }
 
     return currentCategory;
+
+ */
   }
 }

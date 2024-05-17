@@ -1,5 +1,6 @@
-
+import 'package:finance/core/injection.dart';
 import 'package:finance/features/authentication/view/login_page.dart';
+import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/view/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +21,12 @@ class FirebaseStream extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           if (FirebaseAuth.instance.currentUser != null) {
+            // getIt<CategoriesBloc>().add(CategoriesGetTagsEvent(
+            //     useUid: FirebaseAuth.instance.currentUser!.uid));
             return HomePage();
           } else {
             return LoginPage();
           }
-
         }
         return LoginPage();
       },

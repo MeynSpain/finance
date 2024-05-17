@@ -27,6 +27,7 @@ class Globals {
 
   // Название категорий
 
+  static const String root = 'Личный баланс';
   static const String rent = 'Аренда';
   static const String health = 'Здоровье';
   static const String utilities = 'Коммунальные услуги';

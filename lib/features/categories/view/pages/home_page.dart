@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance/core/injection.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,14 +38,14 @@ class HomePage extends StatelessWidget {
                     Navigator.of(context).pushNamed('/categories');
                   },
                   icon: SvgPicture.asset('assets/icons/button.svg')),
-              // IconButton(
-              //   onPressed: () {
-              //     FirebaseAuth.instance.signOut();
-              //     Navigator.of(context)
-              //         .pushNamedAndRemoveUntil('/login', (route) => false);
-              //   },
-              //   icon: Icon(Icons.exit_to_app),
-              // ),
+              IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/login', (route) => false);
+                },
+                icon: Icon(Icons.exit_to_app),
+              ),
             ],
           ),
           body: Row(
@@ -140,7 +141,12 @@ class HomePage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(bottom: 30),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        getIt<CategoriesBloc>().add(CategoriesGetTagsEvent(
+                            useUid: FirebaseAuth.instance.currentUser!.uid));
+
+                        Navigator.of(context).pushNamed('/newTransaction');
+                      },
                       child: Text('Добавить'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,

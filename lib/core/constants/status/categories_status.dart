@@ -5,6 +5,9 @@ enum CategoriesStatus {
   errorCategoryNotAdded,
   errorGettingAllCategories,
   errorAddingStartTemplate,
+  errorUpdatingBalance,
+  errorAddingTag,
+  errorGettingTags,
 
   creatingCategory,
   addingCategory,
@@ -16,9 +19,18 @@ enum CategoriesStatus {
   addingStartTemplate,
   startTemplateAdded,
 
+  addingTagsTemplate,
+  tagsTemplateAdded,
+
   addingTransaction,
   transactionAdded,
 
   updatingBalance,
   balanceUpdated,
+
+  addingTag,
+  tagAdded,
+
+  gettingTags,
+  tagsReceived,
 }

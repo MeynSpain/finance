@@ -38,12 +38,12 @@ class CategoriesAddStartTemplateEvent extends CategoriesEvent {
 class CategoriesAddTransactionEvent extends CategoriesEvent {
   final String userUid;
   final TransactionModel transactionModel;
-  final CategoryModel parentCategoryOfTransaction;
+  final String rootCategoryUid;
 
   CategoriesAddTransactionEvent({
     required this.userUid,
     required this.transactionModel,
-    required this.parentCategoryOfTransaction,
+    required this.rootCategoryUid,
   });
 }
 
@@ -55,7 +55,23 @@ class CategoriesUpdateBalanceEvent extends CategoriesEvent {
 
   CategoriesUpdateBalanceEvent(
       {
-        // required this.userUid,
+      // required this.userUid,
       required this.categoryModel,
       required this.newBalance});
+}
+
+class CategoriesAddTagEvent extends CategoriesEvent {
+  final TagModel tagModel;
+  final String userUid;
+
+  CategoriesAddTagEvent({
+    required this.tagModel,
+    required this.userUid,
+  });
+}
+
+class CategoriesGetTagsEvent extends CategoriesEvent {
+  final String useUid;
+
+  CategoriesGetTagsEvent({required this.useUid});
 }
