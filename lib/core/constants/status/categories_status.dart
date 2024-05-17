@@ -2,12 +2,15 @@ enum CategoriesStatus {
   initial,
 
   error,
+  errorInitial,
   errorCategoryNotAdded,
   errorGettingAllCategories,
   errorAddingStartTemplate,
   errorUpdatingBalance,
   errorAddingTag,
   errorGettingTags,
+
+  initialSuccess,
 
   creatingCategory,
   addingCategory,

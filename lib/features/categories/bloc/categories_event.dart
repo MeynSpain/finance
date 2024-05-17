@@ -3,6 +3,12 @@ part of 'categories_bloc.dart';
 @immutable
 abstract class CategoriesEvent {}
 
+class CategoriesInitialEvent extends CategoriesEvent {
+  final String userUid;
+
+  CategoriesInitialEvent({required this.userUid});
+}
+
 /// Переход к созданию категории
 /// Должно просто вызваться окно для создания категории
 class CategoriesCreateCategoryEvent extends CategoriesEvent {}

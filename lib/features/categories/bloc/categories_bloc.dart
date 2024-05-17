@@ -20,6 +20,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   final DatabaseService databaseService = DatabaseService();
 
   CategoriesBloc() : super(CategoriesState.initial()) {
+    on<CategoriesInitialEvent>(_initial);
     on<CategoriesAddingCategoryEvent>(_addingCategory);
     on<CategoriesGetAllCategoriesEvent>(_getAllCategories);
     on<CategoriesAddStartTemplateEvent>(_addStartTemplate);
@@ -27,6 +28,48 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesUpdateBalanceEvent>(_updateBalance);
     on<CategoriesAddTagEvent>(_addTag);
     on<CategoriesGetTagsEvent>(_getTags);
+  }
+
+  Future<void> _initial(
+      CategoriesInitialEvent event, Emitter<CategoriesState> emit) async {
+    emit(state.copyWith(
+      status: CategoriesStatus.initial,
+    ));
+
+    try {
+      emit(state.copyWith(
+        status: CategoriesStatus.gettingAllCategories,
+      ));
+
+      List<CategoryModel> listCategories =
+          await databaseService.getAllCategories(event.userUid);
+
+      emit(state.copyWith(
+        status: CategoriesStatus.allCategoriesReceived,
+        listCategories: listCategories,
+        currentCategory: listCategories.first,
+      ));
+
+      emit(state.copyWith(
+        status: CategoriesStatus.gettingTags,
+      ));
+
+      List<TagModel> listTags = await databaseService.getTags(event.userUid);
+
+      emit(state.copyWith(
+        status: CategoriesStatus.tagsReceived,
+        listTags: listTags,
+      ));
+
+      emit(state.copyWith(
+        status: CategoriesStatus.initialSuccess,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.errorInitial,
+      ));
+    }
   }
 
   /// Добавление категории в базу данных
@@ -95,9 +138,9 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       }
 
       emit(state.copyWith(
-          status: CategoriesStatus.allCategoriesReceived,
-          listCategories: categories,
-          currentCategory: categories.first,
+        status: CategoriesStatus.allCategoriesReceived,
+        listCategories: categories,
+        currentCategory: categories.first,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -127,7 +170,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         status: CategoriesStatus.startTemplateAdded,
         listTags: listTags,
       ));
-
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
     }
@@ -217,7 +259,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         status: CategoriesStatus.tagsReceived,
         listTags: listTags,
       ));
-
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(

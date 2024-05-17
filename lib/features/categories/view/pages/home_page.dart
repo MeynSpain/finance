@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
@@ -48,121 +49,128 @@ class HomePage extends StatelessWidget {
               ),
             ],
           ),
-          body: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 38),
-                    child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
+          body: (state.status == CategoriesStatus.initial ||
+                  state.status == CategoriesStatus.gettingAllCategories ||
+                  state.status == CategoriesStatus.gettingTags)
+              ? Center(child: CircularProgressIndicator())
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Баланс',
-                          style: theme.textTheme.bodyLarge,
+                        Container(
+                          padding: EdgeInsets.only(top: 38),
+                          child: Column(
+                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                'Баланс',
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                              // SizedBox(
+                              //   height: 16,
+                              // ),
+                              Text(
+                                '120,910.50',
+                                style: theme.textTheme.headlineLarge,
+                              ),
+                              // SizedBox(
+                              //   height: 16,
+                              // ),
+                              SvgPicture.asset('assets/icons/Rouble.svg'),
+                            ],
+                          ),
                         ),
-                        // SizedBox(
-                        //   height: 16,
-                        // ),
-                        Text(
-                          '120,910.50',
-                          style: theme.textTheme.headlineLarge,
-                        ),
-                        // SizedBox(
-                        //   height: 16,
-                        // ),
-                        SvgPicture.asset('assets/icons/Rouble.svg'),
-                      ],
-                    ),
-                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 18),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.ac_unit,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.ac_unit,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.ac_unit,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.ac_unit,
+                        // SizedBox(
+                        //   height: 68,
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 68),
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text('Доходы'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  foregroundColor: Colors.white,
+                                  textStyle: theme.textTheme.bodyMedium,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 15,
+                                    horizontal: 30,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text('Расходы'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
+                                  textStyle: theme.textTheme.bodyMedium,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 15,
+                                    horizontal: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  // SizedBox(
-                  //   height: 68,
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 68),
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Доходы'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            textStyle: theme.textTheme.bodyMedium,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 30,
+                        Expanded(
+                            child: SizedBox(
+                          height: 1,
+                        )),
+                        // SizedBox(height: ,),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 30),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              getIt<CategoriesBloc>().add(
+                                  CategoriesGetTagsEvent(
+                                      useUid: FirebaseAuth
+                                          .instance.currentUser!.uid));
+
+                              Navigator.of(context)
+                                  .pushNamed('/newTransaction');
+                            },
+                            child: Text('Добавить'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              textStyle: theme.textTheme.bodyMedium,
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                                horizontal: 140,
+                              ),
                             ),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Расходы'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            textStyle: theme.textTheme.bodyMedium,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 30,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
-                  ),
-                  Expanded(
-                      child: SizedBox(
-                    height: 1,
-                  )),
-                  // SizedBox(height: ,),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 30),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        getIt<CategoriesBloc>().add(CategoriesGetTagsEvent(
-                            useUid: FirebaseAuth.instance.currentUser!.uid));
-
-                        Navigator.of(context).pushNamed('/newTransaction');
-                      },
-                      child: Text('Добавить'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        textStyle: theme.textTheme.bodyMedium,
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 140,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
         );
       },
     );

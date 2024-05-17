@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/services/authentication_service.dart';
 import 'package:finance/core/services/snack_bar_service.dart';
+import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -54,6 +55,12 @@ class _LoginPageState extends State<LoginPage> {
             await authenticationService.login(email: email, password: password);
 
         getIt<Talker>().info(userCredential.user.toString());
+
+        getIt<Talker>().info(
+            'Current user after login: ${FirebaseAuth.instance.currentUser!.uid}');
+
+        getIt<CategoriesBloc>().add(CategoriesInitialEvent(
+            userUid: FirebaseAuth.instance.currentUser!.uid));
 
         navigator.pushNamedAndRemoveUntil('/home', (route) => false);
       }

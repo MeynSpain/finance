@@ -6,6 +6,7 @@ import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -74,7 +75,14 @@ class _SignUpScreen extends State<SignUpScreen> {
         // Добавление пользователя в бд
         await databaseService.addUser(userModel);
 
-        getIt<CategoriesBloc>().add(CategoriesAddStartTemplateEvent(userUid: userCredential.user!.uid));
+        getIt<CategoriesBloc>().add(
+            CategoriesAddStartTemplateEvent(userUid: userCredential.user!.uid));
+
+        getIt<Talker>().info(
+            'Current user after login: ${FirebaseAuth.instance.currentUser!.uid}');
+
+        getIt<CategoriesBloc>().add(CategoriesInitialEvent(
+            userUid: FirebaseAuth.instance.currentUser!.uid));
 
         navigator.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       }

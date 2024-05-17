@@ -23,6 +23,7 @@ class FirebaseStream extends StatelessWidget {
           if (FirebaseAuth.instance.currentUser != null) {
             // getIt<CategoriesBloc>().add(CategoriesGetTagsEvent(
             //     useUid: FirebaseAuth.instance.currentUser!.uid));
+            print('############## test ##############');
             return HomePage();
           } else {
             return LoginPage();
