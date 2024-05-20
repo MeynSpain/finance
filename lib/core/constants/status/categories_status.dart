@@ -9,6 +9,7 @@ enum CategoriesStatus {
   errorUpdatingBalance,
   errorAddingTag,
   errorGettingTags,
+  errorManyTagCategory,
 
   initialSuccess,
 
@@ -36,4 +37,6 @@ enum CategoriesStatus {
 
   gettingTags,
   tagsReceived,
+
+
 }

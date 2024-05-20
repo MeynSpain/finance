@@ -3,6 +3,7 @@ import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
+import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/view/widgets/new_tag_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,8 +27,6 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   final TextEditingController _descriptionTextInputController =
       TextEditingController();
-
-
 
   List<TagModel> selectedTags = [];
   List<TagModel> tags = [];

@@ -102,12 +102,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       DocumentReference? documentReference = await databaseService.addCategory(
           categoryModel: categoryModel, userUid: event.userUid);
 
-
-
       if (documentReference != null) {
-
         // Добавляем категорию в качестве тега
-        TagModel tagModel = TagModel(name: categoryModel.name!, type: Globals.typeCategory);
+        TagModel tagModel =
+            TagModel(name: categoryModel.name!, type: Globals.typeCategory);
         await databaseService.addTag(tagModel, event.userUid);
 
         // Проверяем есть ли родительская категория, если да, то добавляем к ней
@@ -117,7 +115,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
           // print('Список стейта:');
           // print(state.listCategories);
         } else {
-
           emit(state.copyWith(
             status: CategoriesStatus.addedCategory,
             listCategories: [...state.listCategories, categoryModel],
@@ -131,7 +128,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         }
         emit(state.copyWith(
           status: CategoriesStatus.addedCategory,
-          listUnsortedCategories: [...state.listUnsortedCategories, categoryModel],
+          listUnsortedCategories: [
+            ...state.listUnsortedCategories,
+            categoryModel
+          ],
           listTags: [...?state.listTags, tagModel],
         ));
       } else {
@@ -212,8 +212,24 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     ));
 
     try {
-      // CategoryModel categoryModel = await databaseService.addTransaction(
-      //     event.transactionModel, event.parentCategoryOfTransaction);
+      // Проверка на кол-во тегов типа Категория
+      List<TagModel>? listTags = event.transactionModel.tags;
+      int countTypeCategory = 0;
+      if (listTags != null) {
+        for (TagModel tag in listTags) {
+          if (tag.type == Globals.typeCategory) {
+            countTypeCategory++;
+            if (countTypeCategory >= 2) {
+              emit(state.copyWith(
+                status: CategoriesStatus.errorManyTagCategory,
+                messageError:
+                    'Транзакция содержит больше одного тека типа Категория',
+              ));
+              return;
+            }
+          }
+        }
+      }
 
       await databaseService.addTransaction(
         event.transactionModel,
