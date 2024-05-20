@@ -35,4 +35,14 @@ class Globals {
   static const String subscribes = 'Подписки';
   static const String leisure = 'Досуг';
   static const String transport = 'Транспорт';
+
+  // Название полей в тегах
+
+  static const String type = 'type';
+
+  // Типы
+
+  static const String typeCategory = 'category';
+  static const String typeSimpleTag = 'simple tag';
+
 }

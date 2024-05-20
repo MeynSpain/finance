@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/category_model.dart';
@@ -41,14 +42,21 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         status: CategoriesStatus.gettingAllCategories,
       ));
 
-      List<CategoryModel> listCategories =
+      List<CategoryModel> listUnsortedCategories =
           await databaseService.getAllCategories(event.userUid);
+
+      List<CategoryModel> listSortedCategories =
+          databaseService.sortCategoriesInTree(listUnsortedCategories);
 
       emit(state.copyWith(
         status: CategoriesStatus.allCategoriesReceived,
-        listCategories: listCategories,
-        currentCategory: listCategories.first,
+        listUnsortedCategories: listUnsortedCategories,
+        listCategories: listSortedCategories,
+        currentCategory: listSortedCategories.first,
       ));
+
+      getIt<Talker>()
+          .info('Неотсортированные категории : ${listUnsortedCategories}');
 
       emit(state.copyWith(
         status: CategoriesStatus.gettingTags,
@@ -94,22 +102,37 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       DocumentReference? documentReference = await databaseService.addCategory(
           categoryModel: categoryModel, userUid: event.userUid);
 
+
+
       if (documentReference != null) {
+
+        // Добавляем категорию в качестве тега
+        TagModel tagModel = TagModel(name: categoryModel.name!, type: Globals.typeCategory);
+        await databaseService.addTag(tagModel, event.userUid);
+
         // Проверяем есть ли родительская категория, если да, то добавляем к ней
         final parentCategory = event.parentCategory;
         if (parentCategory != null) {
           parentCategory.childrenCategory.add(categoryModel);
-          print('Список стейта:');
-          print(state.listCategories);
+          // print('Список стейта:');
+          // print(state.listCategories);
         } else {
+
           emit(state.copyWith(
             status: CategoriesStatus.addedCategory,
             listCategories: [...state.listCategories, categoryModel],
+            listUnsortedCategories: [
+              ...state.listUnsortedCategories,
+              categoryModel
+            ],
+            listTags: [...?state.listTags, tagModel],
           ));
           return;
         }
         emit(state.copyWith(
           status: CategoriesStatus.addedCategory,
+          listUnsortedCategories: [...state.listUnsortedCategories, categoryModel],
+          listTags: [...?state.listTags, tagModel],
         ));
       } else {
         // Категория не добавлена
@@ -133,15 +156,21 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       List<CategoryModel> categories =
           await databaseService.getAllCategories(event.userUid);
 
+      List<CategoryModel> listSortedCategories =
+          databaseService.sortCategoriesInTree(categories);
+
       if (categories.isEmpty) {
         getIt<Talker>().debug('Почему то пустые категории');
       }
 
       emit(state.copyWith(
         status: CategoriesStatus.allCategoriesReceived,
-        listCategories: categories,
-        currentCategory: categories.first,
+        listCategories: listSortedCategories,
+        listUnsortedCategories: categories,
+        currentCategory: listSortedCategories.first,
       ));
+
+      getIt<Talker>().info('Неотсортированные категории : ${categories}');
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(status: CategoriesStatus.errorGettingAllCategories));

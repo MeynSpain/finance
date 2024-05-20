@@ -19,8 +19,7 @@ Future<void> init() async {
   final talker = TalkerFlutter.init();
   getIt.registerSingleton(talker);
   getIt<Talker>().info('Application started...');
-  getIt<Talker>()
-      .info('Current User: ${FirebaseAuth.instance.currentUser!.uid}');
+
 
   // Регистрация блоков
   getIt.registerLazySingleton<CategoriesBloc>(() => CategoriesBloc());
@@ -33,6 +32,12 @@ Future<void> init() async {
         printStateFullData: true,
       ));
 
-  getIt<CategoriesBloc>().add(
-      CategoriesInitialEvent(userUid: FirebaseAuth.instance.currentUser!.uid));
+  if (FirebaseAuth.instance.currentUser != null) {
+    getIt<Talker>()
+        .info('Current User: ${FirebaseAuth.instance.currentUser!.uid}');
+
+    getIt<CategoriesBloc>().add(
+        CategoriesInitialEvent(userUid: FirebaseAuth.instance.currentUser!.uid));
+  }
+
 }

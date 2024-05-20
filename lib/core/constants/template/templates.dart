@@ -7,14 +7,14 @@ class Templates {
 
   static List<TagModel> getStartTagsTemplate() {
     List<TagModel> listTags = [
-      TagModel(name: Globals.root),
-      TagModel(name: Globals.rent),
-      TagModel(name: Globals.health),
-      TagModel(name: Globals.utilities),
-      TagModel(name: Globals.products),
-      TagModel(name: Globals.subscribes),
-      TagModel(name: Globals.leisure),
-      TagModel(name: Globals.transport),
+      TagModel(name: Globals.root, type: Globals.typeCategory),
+      TagModel(name: Globals.rent, type: Globals.typeCategory),
+      TagModel(name: Globals.health, type: Globals.typeCategory),
+      TagModel(name: Globals.utilities, type: Globals.typeCategory),
+      TagModel(name: Globals.products, type: Globals.typeCategory),
+      TagModel(name: Globals.subscribes, type: Globals.typeCategory),
+      TagModel(name: Globals.leisure, type: Globals.typeCategory),
+      TagModel(name: Globals.transport, type: Globals.typeCategory),
 
     ];
     return listTags;

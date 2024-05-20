@@ -4,6 +4,7 @@ import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/categories/view/widgets/new_tag_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   final TextEditingController _descriptionTextInputController =
       TextEditingController();
+
+
 
   List<TagModel> selectedTags = [];
   List<TagModel> tags = [];
@@ -126,7 +129,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                     ),
                     IconButton(
                       onPressed: () {
-                        // _showDialog(context);
+                        _addTag(context);
                       },
                       icon: Icon(Icons.add),
                     ),
@@ -206,6 +209,10 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
           rootCategoryUid:
               getIt<CategoriesBloc>().state.currentCategory!.uid!));
     }
+  }
+
+  void _addTag(BuildContext context) {
+    showDialog(context: context, builder: (context) => NewTagWidget());
   }
 
 // String selectedTag = 'one';

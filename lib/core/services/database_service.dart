@@ -69,7 +69,38 @@ class DatabaseService {
     }
   }
 
-  /// Получает все категории пользователя
+  List<CategoryModel> sortCategoriesInTree(List<CategoryModel> listCategories) {
+    List<CategoryModel> sortedListCategories = [];
+
+    for (CategoryModel categoryModel in listCategories) {
+      sortedListCategories.add(categoryModel);
+    }
+
+    List<int> listChildrenIndexes = [];
+
+    for (int i = 0; i < sortedListCategories.length; i++) {
+      // Смотрим наличие с полем parentCategoryUid
+      if (sortedListCategories[i].parentCategoryUid != null) {
+        listChildrenIndexes.add(i);
+        // Теперь ищем в списке родительскую категорию и добавляем ей в список
+        // childrenCategory
+        CategoryModel category = sortedListCategories.firstWhere(
+                (element) => element.uid == sortedListCategories[i].parentCategoryUid);
+        category.childrenCategory.add(sortedListCategories[i]);
+      }
+    }
+
+    // Теперь убрать лишние элементы из списка, т.к. они уже в дочерних категориях
+    for (int index in listChildrenIndexes.reversed) {
+      sortedListCategories.removeAt(index);
+    }
+
+
+    return sortedListCategories;
+  }
+
+  /// Получает все категории пользователя без преобразования в дерево.
+  /// У каждой категории [childrenCategory] пустое.
   Future<List<CategoryModel>> getAllCategories(String userUid) async {
     List<CategoryModel> listCategories = [];
 
@@ -83,6 +114,7 @@ class DatabaseService {
       }
     });
 
+    /* Перенес сортировку в отдельный метод
     List<int> listChildrenIndexes = [];
 
     for (int i = 0; i < listCategories.length; i++) {
@@ -103,7 +135,7 @@ class DatabaseService {
     }
 
     // print(listCategories);
-
+     */
     return listCategories;
   }
 
