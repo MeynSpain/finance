@@ -11,6 +11,7 @@ class TransactionModel extends Equatable {
   String? categoryUid;
   Timestamp? timestamp;
   String? description;
+  String type;
   List<TagModel>? tags;
 
   /// Подумать как добавить атрибуты транзакции
@@ -23,6 +24,7 @@ class TransactionModel extends Equatable {
     this.userUid,
     this.categoryUid,
     this.timestamp,
+    required this.type,
     this.description,
     this.tags,
   });
@@ -34,6 +36,7 @@ class TransactionModel extends Equatable {
       Globals.userUid: userUid,
       Globals.categoryUid: categoryUid,
       Globals.timestamp: timestamp,
+      Globals.type: type,
       Globals.description: description,
       Globals.tags: tags?.map((tag) => tag.toMap()).toList(),
     };
@@ -46,6 +49,7 @@ class TransactionModel extends Equatable {
       userUid: mapData[Globals.userUid],
       categoryUid: mapData[Globals.categoryUid],
       timestamp: mapData[Globals.timestamp],
+      type: mapData[Globals.type],
       description: mapData[Globals.description],
       tags: (mapData?[Globals.tags] as List<dynamic>)
           .map((tag) => TagModel.fromMap(tag))
@@ -53,12 +57,13 @@ class TransactionModel extends Equatable {
     );
   }
 
+
   @override
   String toString() {
-    return 'TransactionModel{amount: $amount, uid:$uid, userUid: $userUid, categoryUid: $categoryUid, timestamp: $timestamp, description: $description, tags: $tags}';
+    return 'TransactionModel{amount: $amount, uid: $uid, userUid: $userUid, categoryUid: $categoryUid, timestamp: $timestamp, description: $description, type: $type, tags: $tags}';
   }
 
   @override
   List<Object?> get props =>
-      [amount, userUid, categoryUid, timestamp, description, tags];
+      [amount, userUid, categoryUid, timestamp, type, description, tags];
 }

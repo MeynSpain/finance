@@ -44,5 +44,12 @@ class Globals {
 
   static const String typeCategory = 'category';
   static const String typeSimpleTag = 'simple tag';
+  static const String typeTransactionsIncome = 'income';
+  static const String typeTransactionsExpense = 'expense';
+
+
+
+  // Пути
+  static const String chars_icon = 'assets/icons/charts_icon.svg';
 
 }

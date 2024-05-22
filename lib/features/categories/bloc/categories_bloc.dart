@@ -56,18 +56,22 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       ));
 
       getIt<Talker>()
+          .debug('Текущая категория : ${listSortedCategories.first}');
+
+
+      getIt<Talker>()
           .info('Неотсортированные категории : ${listUnsortedCategories}');
 
-      emit(state.copyWith(
-        status: CategoriesStatus.gettingTags,
-      ));
-
-      List<TagModel> listTags = await databaseService.getTags(event.userUid);
-
-      emit(state.copyWith(
-        status: CategoriesStatus.tagsReceived,
-        listTags: listTags,
-      ));
+      // emit(state.copyWith(
+      //   status: CategoriesStatus.gettingTags,
+      // ));
+      //
+      // List<TagModel> listTags = await databaseService.getTags(event.userUid);
+      //
+      // emit(state.copyWith(
+      //   status: CategoriesStatus.tagsReceived,
+      //   listTags: listTags,
+      // ));
 
       emit(state.copyWith(
         status: CategoriesStatus.initialSuccess,
@@ -192,12 +196,12 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         listCategories: [startCategoryTemplate],
       ));
 
-      List<TagModel> listTags =
-          await databaseService.addTagsTemplate(event.userUid);
+      // List<TagModel> listTags =
+      //     await databaseService.addTagsTemplate(event.userUid);
 
       emit(state.copyWith(
         status: CategoriesStatus.startTemplateAdded,
-        listTags: listTags,
+        // listTags: listTags,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -207,6 +211,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   /// Добавление транзакции
   Future<void> _addTransaction(CategoriesAddTransactionEvent event,
       Emitter<CategoriesState> emit) async {
+
     emit(state.copyWith(
       status: CategoriesStatus.addingTransaction,
     ));

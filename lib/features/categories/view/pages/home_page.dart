@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
+import 'package:finance/features/charts/bloc/charts_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -94,10 +97,16 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.ac_unit,
-                                ),
+                                onPressed: () {
+                                  getIt<ChartsBloc>().add(
+                                      ChartsGetLastMonthTransactionsEvent(
+                                          userUid: FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                          rootCategoryUid:
+                                              state.currentCategory!.uid!));
+                                  Navigator.of(context).pushNamed('/charts');
+                                },
+                                icon: SvgPicture.asset(Globals.chars_icon),
                               ),
                             ],
                           ),
@@ -147,10 +156,14 @@ class HomePage extends StatelessWidget {
                           padding: EdgeInsets.only(bottom: 30),
                           child: ElevatedButton(
                             onPressed: () {
-                              getIt<CategoriesBloc>().add(
-                                  CategoriesGetTagsEvent(
-                                      useUid: FirebaseAuth
-                                          .instance.currentUser!.uid));
+                              // getIt<CategoriesBloc>().add(
+                              //     CategoriesGetTagsEvent(
+                              //         useUid: FirebaseAuth
+                              //             .instance.currentUser!.uid));
+
+                              getIt<TagsBloc>().add(TagsGetAllTagsEvent(
+                                  userUid:
+                                      FirebaseAuth.instance.currentUser!.uid));
 
                               Navigator.of(context)
                                   .pushNamed('/newTransaction');

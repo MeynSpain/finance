@@ -5,20 +5,20 @@ import 'package:finance/core/models/tag_model.dart';
 class Templates {
   Templates._();
 
-  static List<TagModel> getStartTagsTemplate() {
-    List<TagModel> listTags = [
-      TagModel(name: Globals.root, type: Globals.typeCategory),
-      TagModel(name: Globals.rent, type: Globals.typeCategory),
-      TagModel(name: Globals.health, type: Globals.typeCategory),
-      TagModel(name: Globals.utilities, type: Globals.typeCategory),
-      TagModel(name: Globals.products, type: Globals.typeCategory),
-      TagModel(name: Globals.subscribes, type: Globals.typeCategory),
-      TagModel(name: Globals.leisure, type: Globals.typeCategory),
-      TagModel(name: Globals.transport, type: Globals.typeCategory),
-
-    ];
-    return listTags;
-  }
+  // static List<TagModel> getStartTagsTemplate() {
+  //   List<TagModel> listTags = [
+  //     TagModel(name: Globals.root, type: Globals.typeCategory),
+  //     TagModel(name: Globals.rent, type: Globals.typeCategory),
+  //     TagModel(name: Globals.health, type: Globals.typeCategory),
+  //     TagModel(name: Globals.utilities, type: Globals.typeCategory),
+  //     TagModel(name: Globals.products, type: Globals.typeCategory),
+  //     TagModel(name: Globals.subscribes, type: Globals.typeCategory),
+  //     TagModel(name: Globals.leisure, type: Globals.typeCategory),
+  //     TagModel(name: Globals.transport, type: Globals.typeCategory),
+  //
+  //   ];
+  //   return listTags;
+  // }
 
   static CategoryModel getStartCategoryTemplate({required String name, required String userUid}) {
     CategoryModel startCategoryTemplate = CategoryModel(

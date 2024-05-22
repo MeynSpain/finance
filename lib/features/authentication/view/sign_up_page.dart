@@ -4,6 +4,7 @@ import 'package:finance/core/services/authentication_service.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -82,6 +83,9 @@ class _SignUpScreen extends State<SignUpScreen> {
             'Current user after login: ${FirebaseAuth.instance.currentUser!.uid}');
 
         getIt<CategoriesBloc>().add(CategoriesInitialEvent(
+            userUid: FirebaseAuth.instance.currentUser!.uid));
+
+        getIt<TagsBloc>().add(TagsGetAllTagsEvent(
             userUid: FirebaseAuth.instance.currentUser!.uid));
 
         navigator.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);

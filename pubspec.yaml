@@ -46,6 +46,7 @@ dependencies:
   tree_view_flutter: ^1.0.2
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
+  pie_chart: ^5.4.0
 
 dev_dependencies:
   flutter_test:

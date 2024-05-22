@@ -2,6 +2,7 @@ import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,7 @@ class _NewTagWidgetState extends State<NewTagWidget> {
                             type: Globals.typeSimpleTag,
                           );
 
-                          getIt<CategoriesBloc>().add(CategoriesAddTagEvent(
+                          getIt<TagsBloc>().add(TagsAddTagEvent(
                               tagModel: tag,
                               userUid: FirebaseAuth.instance.currentUser!.uid));
 

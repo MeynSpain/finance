@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
@@ -63,6 +64,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                           TransactionModel transaction = TransactionModel(
                               amount: int.parse(text),
                               timestamp: Timestamp.now(),
+                              type: Globals.typeTransactionsExpense,
                               categoryUid: getIt<CategoriesBloc>()
                                   .state
                                   .currentCategory!
