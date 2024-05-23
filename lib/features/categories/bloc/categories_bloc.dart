@@ -58,7 +58,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       getIt<Talker>()
           .debug('Текущая категория : ${listSortedCategories.first}');
 
-
       getIt<Talker>()
           .info('Неотсортированные категории : ${listUnsortedCategories}');
 
@@ -211,7 +210,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   /// Добавление транзакции
   Future<void> _addTransaction(CategoriesAddTransactionEvent event,
       Emitter<CategoriesState> emit) async {
-
     emit(state.copyWith(
       status: CategoriesStatus.addingTransaction,
     ));
@@ -237,17 +235,23 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       }
 
       await databaseService.addTransaction(
-        event.transactionModel,
-        event.rootCategoryUid,
-        event.userUid,
+        userUid: event.userUid,
+        categories: state.listUnsortedCategories,
+        categoryUid: event.transactionModel.categoryUid!,
+        rootCategoryUid: event.rootCategoryUid,
+        transactionModel: event.transactionModel,
+        isIncome: event.isIncome,
       );
 
       // int indexOfCurrentCategory = state.listCategories.indexWhere((element) => element.uid == categoryModel.uid);
 
       // state.listCategories[indexOfCurrentCategory] = categoryModel;
 
+      CategoryModel? categoryModel = await databaseService.getCategory(categoryUid: event.rootCategoryUid, userUid: event.userUid);
+
       emit(state.copyWith(
         status: CategoriesStatus.transactionAdded,
+        currentCategory: categoryModel,
         // listCategories: state.listCategories,
       ));
     } catch (e, st) {

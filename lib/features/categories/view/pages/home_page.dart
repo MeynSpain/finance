@@ -75,7 +75,7 @@ class HomePage extends StatelessWidget {
                               //   height: 16,
                               // ),
                               Text(
-                                '120,910.50',
+                                '${state.currentCategory?.balance}',
                                 style: theme.textTheme.headlineLarge,
                               ),
                               // SizedBox(

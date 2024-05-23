@@ -37,6 +37,9 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
   // TagModel? lastTag;
   // bool isAdded = false;
   int _selectedIndex = 0;
+
+  bool isIncome = false;
+
   // late List<bool> _selectedTags;
 
   @override
@@ -73,6 +76,13 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
       // resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        title: Text(
+          'Добавление транзакции',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontSize: 22,
+          ),
+        ),
+        centerTitle: true,
         // leadingWidth: 120,
         leading: IconButton(
           icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
@@ -82,10 +92,76 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isIncome = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 30,
+                        ),
+                        backgroundColor:
+                            !isIncome ? Colors.black : Colors.white),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Расходы',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: !isIncome ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 400),
+                          height: 2,
+                          width: !isIncome ? 70 : 0,
+                          // Adjust the width as needed
+                          color: !isIncome ? Colors.white : Colors.transparent,
+                        )
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isIncome = true;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 30,
+                        ),
+                        backgroundColor:
+                            isIncome ? Colors.black : Colors.white),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Доходы',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isIncome ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 400),
+                          height: 2,
+                          width: isIncome ? 70 : 0,
+                          // Adjust the width as needed
+                          color: isIncome ? Colors.white : Colors.transparent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               Text('Категории'),
               SizedBox(
                 height: 20,
@@ -141,7 +217,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
               ),
               TagsWidget(),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: TextField(
                   controller: _summaTextInputController,
                   // expands: false,
@@ -158,7 +235,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: TextField(
                   controller: _descriptionTextInputController,
                   // expands: false,
@@ -215,18 +293,23 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
         description: description,
         tags: tags,
         timestamp: Timestamp.now(),
-        type: Globals.typeTransactionsExpense,
-        categoryUid: getIt<CategoriesBloc>().state.listUnsortedCategories[_selectedIndex].uid,
+        type: !isIncome
+            ? Globals.typeTransactionsExpense
+            : Globals.typeTransactionsIncome,
+        categoryUid: getIt<CategoriesBloc>()
+            .state
+            .listUnsortedCategories[_selectedIndex]
+            .uid,
       );
 
       getIt<CategoriesBloc>().add(CategoriesAddTransactionEvent(
-          userUid: FirebaseAuth.instance.currentUser!.uid,
-          transactionModel: transactionModel,
-          rootCategoryUid:
-              getIt<CategoriesBloc>().state.currentCategory!.uid!));
+        userUid: FirebaseAuth.instance.currentUser!.uid,
+        transactionModel: transactionModel,
+        rootCategoryUid: getIt<CategoriesBloc>().state.currentCategory!.uid!,
+        isIncome: isIncome,
+      ));
     }
   }
-
 
 // String selectedTag = 'one';
 

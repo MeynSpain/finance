@@ -5,12 +5,20 @@ class ChartsState extends Equatable {
   final List<TransactionModel> listTransactions;
   final String errorMessage;
   final Map<String, double> dataMap;
+  final Map<String, double> constDataMap;
+  final Map<String, bool> selectedMap;
+  final int totalValue;
 
-  ChartsState._(
-      {required this.status,
-      required this.listTransactions,
-      required this.errorMessage,
-      required this.dataMap});
+
+  ChartsState._({
+    required this.status,
+    required this.listTransactions,
+    required this.errorMessage,
+    required this.dataMap,
+    required this.constDataMap,
+    required this.selectedMap,
+    required this.totalValue,
+  });
 
   factory ChartsState.initial() {
     return ChartsState._(
@@ -18,6 +26,9 @@ class ChartsState extends Equatable {
       listTransactions: [],
       errorMessage: '',
       dataMap: {},
+      constDataMap: {},
+      selectedMap: {},
+      totalValue: 0,
     );
   }
 
@@ -26,20 +37,30 @@ class ChartsState extends Equatable {
     List<TransactionModel>? listTransactions,
     String? errorMessage,
     Map<String, double>? dataMap,
+    final Map<String, double>? constDataMap,
+    final Map<String, bool>? selectedMap,
+    int? totalValue,
   }) {
     return ChartsState._(
       status: status ?? this.status,
       listTransactions: listTransactions ?? this.listTransactions,
       errorMessage: errorMessage ?? this.errorMessage,
       dataMap: dataMap ?? this.dataMap,
+      constDataMap: constDataMap ?? this.constDataMap,
+      selectedMap: selectedMap ?? this.selectedMap,
+      totalValue: totalValue ?? this.totalValue,
     );
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         status,
         errorMessage,
         listTransactions,
         dataMap,
+        constDataMap,
+        selectedMap,
+        totalValue,
       ];
 }

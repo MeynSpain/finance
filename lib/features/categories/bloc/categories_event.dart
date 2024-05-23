@@ -45,11 +45,13 @@ class CategoriesAddTransactionEvent extends CategoriesEvent {
   final String userUid;
   final TransactionModel transactionModel;
   final String rootCategoryUid;
+  final bool isIncome;
 
   CategoriesAddTransactionEvent({
     required this.userUid,
     required this.transactionModel,
     required this.rootCategoryUid,
+    required this.isIncome,
   });
 }
 

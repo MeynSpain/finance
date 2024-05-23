@@ -140,9 +140,10 @@ class DatabaseService {
 
   Future<CategoryModel?> getCategory(
       {required String categoryUid, required String userUid}) async {
+
     final querySnapshot = await db
         .collectionGroup(Globals.categories)
-        .where(FieldPath.documentId, isEqualTo: categoryUid)
+        .where(Globals.uid, isEqualTo: categoryUid)
         .where(Globals.userUid, isEqualTo: userUid)
         .get();
 
@@ -259,8 +260,14 @@ class DatabaseService {
   }
 
   /// Добавляет транзакцию в бд
-  Future<void> addTransaction(TransactionModel transactionModel,
-      String rootCategoryUid, String userUid) async {
+  Future<void> addTransaction({
+    required TransactionModel transactionModel,
+    required String rootCategoryUid,
+    required String categoryUid,
+    required List<CategoryModel> categories,
+    required String userUid,
+    bool isIncome = false,
+  }) async {
     // parentCategory.transactions?.add(transactionModel);
 
     DocumentReference transactionReference = db
@@ -274,6 +281,35 @@ class DatabaseService {
     transactionModel.uid = transactionReference.id;
 
     transactionReference.set(transactionModel.toMap());
+
+    int index =
+        categories.indexWhere((category) => category.uid == categoryUid);
+
+    int amount = transactionModel.amount;
+
+    if (!isIncome) {
+      amount = amount * (-1);
+    }
+
+    bool isDone = false;
+    while (!isDone) {
+      QuerySnapshot querySnapshot = await db
+          .collectionGroup(Globals.categories)
+          .where(Globals.uid, isEqualTo: categories[index].uid)
+          .where(Globals.userUid, isEqualTo: categories[index].userUid)
+          .get();
+
+      await querySnapshot.docs.first.reference.update({
+        Globals.balance: FieldValue.increment(amount),
+      });
+
+      if (categories[index].parentCategoryUid != null) {
+        index = categories.indexWhere(
+            (category) => category.uid == categories[index].parentCategoryUid);
+      } else {
+        isDone = true;
+      }
+    }
 
     /// Осталось обновить балансы
 /*
@@ -333,9 +369,9 @@ class DatabaseService {
 
     QuerySnapshot querySnapshot = await transactionCollectionReference
         .where(Globals.timestamp,
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(startDate))
-        .where(Globals.timestamp, isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+        .where(Globals.timestamp,
+            isLessThanOrEqualTo: Timestamp.fromDate(endDate))
         .get();
     // QuerySnapshot querySnapshot = await transactionCollectionReference.get();
 

@@ -9,3 +9,15 @@ class ChartsGetLastMonthTransactionsEvent extends ChartsEvent {
 
   ChartsGetLastMonthTransactionsEvent({required this.userUid, required this.rootCategoryUid});
 }
+
+class ChartsDeleteDataFromDataMapEvent extends ChartsEvent {
+  final String key;
+
+  ChartsDeleteDataFromDataMapEvent({required this.key});
+}
+
+class ChartsToggleElementEvent extends ChartsEvent {
+  final String key;
+
+  ChartsToggleElementEvent({required this.key});
+}
