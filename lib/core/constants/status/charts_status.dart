@@ -9,6 +9,11 @@ enum ChartsStatus {
   togglingElement,
   elementToggled,
 
+  changingType,
+  typeChanged,
+
+  dataMapEmpty,
+
   success,
 
   error,

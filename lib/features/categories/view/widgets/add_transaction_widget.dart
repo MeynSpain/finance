@@ -77,6 +77,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                               .add(CategoriesAddTransactionEvent(
                             userUid: FirebaseAuth.instance.currentUser!.uid,
                             transactionModel: transaction,
+                            isIncome: false,
                             rootCategoryUid: getIt<CategoriesBloc>()
                                 .state
                                 .currentCategory!

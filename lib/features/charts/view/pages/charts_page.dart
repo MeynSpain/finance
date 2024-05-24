@@ -18,6 +18,8 @@ class _ChartsPageState extends State<ChartsPage> {
   List<Color> colorList = [];
   List<Color> constColorList = [];
 
+  bool isIncome = false;
+
   @override
   void initState() {
     // colorList = generateUniqueColors(dataMap.length);
@@ -25,59 +27,59 @@ class _ChartsPageState extends State<ChartsPage> {
     super.initState();
   }
 
-  Color hslToColor(double h, double s, double l) {
-    double chroma = (1.0 - (2.0 * l - 1.0).abs()) * s;
-    double x = chroma * (1.0 - ((h / 60.0) % 2 - 1.0).abs());
-    double m = l - chroma / 2.0;
-    double r = 0, g = 0, b = 0;
-
-    if (0 <= h && h < 60) {
-      r = chroma;
-      g = x;
-      b = 0;
-    } else if (60 <= h && h < 120) {
-      r = x;
-      g = chroma;
-      b = 0;
-    } else if (120 <= h && h < 180) {
-      r = 0;
-      g = chroma;
-      b = x;
-    } else if (180 <= h && h < 240) {
-      r = 0;
-      g = x;
-      b = chroma;
-    } else if (240 <= h && h < 300) {
-      r = x;
-      g = 0;
-      b = chroma;
-    } else if (300 <= h && h < 360) {
-      r = chroma;
-      g = 0;
-      b = x;
-    }
-
-    r = ((r + m) * 255).round().toDouble();
-    g = ((g + m) * 255).round().toDouble();
-    b = ((b + m) * 255).round().toDouble();
-
-    return Color.fromRGBO(r.toInt(), g.toInt(), b.toInt(), 1.0);
-  }
-
-  // Функция для генерации списка уникальных цветов
-  List<Color> generateUniqueColors(int numberOfColors) {
-    double saturation = 1.0;
-    double lightness = 0.5;
-
-    List<Color> colors = [];
-    for (int i = 0; i < numberOfColors; i++) {
-      double hue = (i * 360 / numberOfColors) % 360;
-      colors.add(hslToColor(hue, saturation, lightness));
-      saturation = 0.7 + (i % 2) * 0.3;
-      lightness = 0.4 + ((i % 2) * 0.3);
-    }
-    return colors;
-  }
+  // Color hslToColor(double h, double s, double l) {
+  //   double chroma = (1.0 - (2.0 * l - 1.0).abs()) * s;
+  //   double x = chroma * (1.0 - ((h / 60.0) % 2 - 1.0).abs());
+  //   double m = l - chroma / 2.0;
+  //   double r = 0, g = 0, b = 0;
+  //
+  //   if (0 <= h && h < 60) {
+  //     r = chroma;
+  //     g = x;
+  //     b = 0;
+  //   } else if (60 <= h && h < 120) {
+  //     r = x;
+  //     g = chroma;
+  //     b = 0;
+  //   } else if (120 <= h && h < 180) {
+  //     r = 0;
+  //     g = chroma;
+  //     b = x;
+  //   } else if (180 <= h && h < 240) {
+  //     r = 0;
+  //     g = x;
+  //     b = chroma;
+  //   } else if (240 <= h && h < 300) {
+  //     r = x;
+  //     g = 0;
+  //     b = chroma;
+  //   } else if (300 <= h && h < 360) {
+  //     r = chroma;
+  //     g = 0;
+  //     b = x;
+  //   }
+  //
+  //   r = ((r + m) * 255).round().toDouble();
+  //   g = ((g + m) * 255).round().toDouble();
+  //   b = ((b + m) * 255).round().toDouble();
+  //
+  //   return Color.fromRGBO(r.toInt(), g.toInt(), b.toInt(), 1.0);
+  // }
+  //
+  // // Функция для генерации списка уникальных цветов
+  // List<Color> generateUniqueColors(int numberOfColors) {
+  //   double saturation = 1.0;
+  //   double lightness = 0.5;
+  //
+  //   List<Color> colors = [];
+  //   for (int i = 0; i < numberOfColors; i++) {
+  //     double hue = (i * 360 / numberOfColors) % 360;
+  //     colors.add(hslToColor(hue, saturation, lightness));
+  //     saturation = 0.7 + (i % 2) * 0.3;
+  //     lightness = 0.4 + ((i % 2) * 0.3);
+  //   }
+  //   return colors;
+  // }
 
   // List<Color> generateColors(int count) {
   //   List<Color> colors = [];
@@ -99,7 +101,7 @@ class _ChartsPageState extends State<ChartsPage> {
       body: BlocBuilder<ChartsBloc, ChartsState>(
         builder: (context, state) {
           if (state.status == ChartsStatus.loading) {
-            return CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (state.listTransactions.isEmpty) {
             return const PieChart(
               // colorList: colorList,
@@ -112,13 +114,104 @@ class _ChartsPageState extends State<ChartsPage> {
               centerText: 'Транзакции не найдены',
             );
           } else {
-            constColorList = generateUniqueColors(state.constDataMap.length);
-            colorList = constColorList;
+            print('###### ${state.dataMap}');
+            // if (isIncome) {
+            //   constColorList =
+            //       generateUniqueColors(state.constDataMapIncome.length);
+            // } else {
+            //   constColorList =
+            //       generateUniqueColors(state.constDataMapExpense.length);
+            // }
+
+            // constColorList = generateUniqueColors(state.constDataMap.length);
+            // colorList = constColorList;
 
             return Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+              ),
               child: Column(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              isIncome = false;
+                            });
+                            // getIt<ChartsBloc>()
+                            //     .add(ChartsChangeTypeEvent(isIncome: isIncome));
+                          },
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 15,
+                                horizontal: 30,
+                              ),
+                              backgroundColor:
+                                  !isIncome ? Colors.black : Colors.white),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Расходы',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color:
+                                      !isIncome ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 400),
+                                height: 2,
+                                width: !isIncome ? 70 : 0,
+                                // Adjust the width as needed
+                                color: !isIncome
+                                    ? Colors.white
+                                    : Colors.transparent,
+                              )
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              isIncome = false;
+                            });
+                            // getIt<ChartsBloc>()
+                            //     .add(ChartsChangeTypeEvent(isIncome: isIncome));
+                          },
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 15,
+                                horizontal: 30,
+                              ),
+                              backgroundColor:
+                                  isIncome ? Colors.black : Colors.white),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Доходы',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: isIncome ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 400),
+                                height: 2,
+                                width: isIncome ? 70 : 0,
+                                // Adjust the width as needed
+                                color: isIncome
+                                    ? Colors.white
+                                    : Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Container(
                     height: 300,
                     padding: EdgeInsets.all(20),
@@ -127,7 +220,9 @@ class _ChartsPageState extends State<ChartsPage> {
                         borderRadius: BorderRadius.circular(30)),
                     child: PieChart(
                       centerWidget: Text('${state.totalValue}'),
-                      dataMap: state.dataMap,
+                      dataMap: state.status != ChartsStatus.dataMapEmpty
+                          ? state.dataMap
+                          : {'': 0},
                       chartType: ChartType.ring,
                       chartValuesOptions:
                           ChartValuesOptions(showChartValues: false),
@@ -137,7 +232,10 @@ class _ChartsPageState extends State<ChartsPage> {
                         legendTextStyle: theme.textTheme.bodyMedium!,
                       ),
                       // colorList: generateUniqueColors(state.dataMap.length),
-                      colorList: colorList,
+                      // colorList: constColorList,
+                      colorList: state.status != ChartsStatus.dataMapEmpty
+                          ? state.colorMap.values.toList()
+                          : [Colors.grey],
                     ),
                   ),
                   SizedBox(
@@ -156,9 +254,10 @@ class _ChartsPageState extends State<ChartsPage> {
                           return Container(
                             padding: EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                                color: !state.selectedMap[key]! 
-                                ?constColorList[index]
-                                :constColorList[index].withOpacity(0.2),
+                                color: !state.selectedDataMap[key]!
+                                    ? state.constColorMap[key]
+                                    : state.constColorMap[key]
+                                        ?.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,9 +267,10 @@ class _ChartsPageState extends State<ChartsPage> {
                                   padding: const EdgeInsets.only(right: 10),
                                   child: GestureDetector(
                                     onTap: () {
-                                      getIt<ChartsBloc>().add(ChartsToggleElementEvent(key: key));
+                                      getIt<ChartsBloc>().add(
+                                          ChartsToggleElementEvent(key: key));
                                     },
-                                    child: !state.selectedMap[key]!
+                                    child: !state.selectedDataMap[key]!
                                         ? Icon(Icons.visibility)
                                         : Icon(Icons.visibility_off),
                                   ),

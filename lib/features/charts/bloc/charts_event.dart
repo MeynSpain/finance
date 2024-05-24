@@ -21,3 +21,9 @@ class ChartsToggleElementEvent extends ChartsEvent {
 
   ChartsToggleElementEvent({required this.key});
 }
+
+class ChartsChangeTypeEvent extends ChartsEvent {
+  final bool isIncome;
+
+  ChartsChangeTypeEvent({required this.isIncome});
+}

@@ -1,4 +1,6 @@
-class PairModel<T, K> {
+import 'package:equatable/equatable.dart';
+
+class PairModel<T, K> extends Equatable {
   T _first;
   K _second;
 
@@ -20,6 +22,9 @@ class PairModel<T, K> {
   String toString() {
     return 'PairModel{$_first, $_second}';
   }
+
+  @override
+  List<Object?> get props => [_first, _second];
 
 // PairModel({required this.first, required this.second});
 }
