@@ -7,7 +7,8 @@ class ChartsGetLastMonthTransactionsEvent extends ChartsEvent {
   final String userUid;
   final String rootCategoryUid;
 
-  ChartsGetLastMonthTransactionsEvent({required this.userUid, required this.rootCategoryUid});
+  ChartsGetLastMonthTransactionsEvent(
+      {required this.userUid, required this.rootCategoryUid});
 }
 
 class ChartsDeleteDataFromDataMapEvent extends ChartsEvent {
@@ -23,7 +24,23 @@ class ChartsToggleElementEvent extends ChartsEvent {
 }
 
 class ChartsChangeTypeEvent extends ChartsEvent {
-  final bool isIncome;
+  final String type;
 
-  ChartsChangeTypeEvent({required this.isIncome});
+  ChartsChangeTypeEvent({required this.type});
+}
+
+class ChartsGetTransactionByDateEvent extends ChartsEvent {
+  final DateTime startDate;
+  final DateTime endDate;
+  final String userUid;
+  final String rootCategoryUid;
+  final String type;
+
+  ChartsGetTransactionByDateEvent({
+    required this.startDate,
+    required this.endDate,
+    required this.userUid,
+    required this.rootCategoryUid,
+    required this.type,
+  });
 }

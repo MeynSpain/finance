@@ -52,4 +52,10 @@ class Globals {
   // Пути
   static const String chars_icon = 'assets/icons/charts_icon.svg';
 
+  // Названия для кнопок
+
+  static const String buttonDataDay = 'День';
+  static const String buttonDataWeek = 'Неделя';
+  static const String buttonDataMonth = 'Месяц';
+  static const String buttonDataPeriod = 'Период';
 }

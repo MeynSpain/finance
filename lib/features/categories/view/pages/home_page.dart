@@ -104,7 +104,9 @@ class HomePage extends StatelessWidget {
                                               .instance.currentUser!.uid,
                                           rootCategoryUid:
                                               state.currentCategory!.uid!));
-                                  Navigator.of(context).pushNamed('/charts');
+                                  Navigator.of(context).pushNamed(
+                                    '/charts',
+                                  );
                                 },
                                 icon: SvgPicture.asset(Globals.chars_icon),
                               ),

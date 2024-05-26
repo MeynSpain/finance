@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/charts_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/pair_model.dart';
@@ -25,6 +26,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
     on<ChartsDeleteDataFromDataMapEvent>(_deleteDataFromDataMap);
     on<ChartsToggleElementEvent>(_toggleElement);
     on<ChartsChangeTypeEvent>(_changeType);
+    on<ChartsGetTransactionByDateEvent>(_getTransactionsByDate);
   }
 
   Future<void> _getLastMonthTransactions(
@@ -60,11 +62,11 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       Map<String, double> constDataMapIncome =
           Map<String, double>.from(dataMapIncome);
 
-      Map<String, bool> selectedIncome =
-          constDataMapIncome.map((key, value) => MapEntry(key, false));
-
-      int totalValueIncome =
-          chartsService.getTotalValueFromDataMap(dataMapIncome);
+      // Map<String, bool> selectedIncome =
+      //     constDataMapIncome.map((key, value) => MapEntry(key, false));
+      //
+      // int totalValueIncome =
+      //     chartsService.getTotalValueFromDataMap(dataMapIncome);
 
       // Расходы
       Map<String, double> dataMapExpense =
@@ -81,7 +83,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
 
       List<Color> colors =
           chartsService.generateUniqueColors(dataMapExpense.length);
-      
+
       // print(object)
 
       Map<String, Color> constColorsMap =
@@ -221,31 +223,60 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
     ));
 
     try {
-      if (event.isIncome) {
+      if (event.type == Globals.typeTransactionsIncome) {
         int totalValue =
             chartsService.getTotalValueFromDataMap(state.constDataMapIncome);
         Map<String, bool> selected =
             state.constDataMapIncome.map((key, value) => MapEntry(key, false));
 
+        List<Color> colors =
+            chartsService.generateUniqueColors(state.constDataMapIncome.length);
+
+        Map<String, Color> constColorMap =
+            chartsService.getMapColor(state.constDataMapIncome, colors);
+
+        Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+
+        Map<String, double> dataMap = Map<String, double>.from(state.constDataMapIncome);
+
         emit(state.copyWith(
-          status: ChartsStatus.typeChanged,
-          dataMap: state.dataMapIncome,
+          status: state.dataMapIncome.isEmpty
+              ? ChartsStatus.dataMapEmpty
+              : ChartsStatus.typeIncome,
+          dataMap: dataMap,
           constDataMap: state.constDataMapIncome,
           selectedDataMap: selected,
           totalValue: totalValue,
+          colorMap: colorMap,
+          constColorMap: constColorMap,
         ));
-      } else {
+      } else if (event.type == Globals.typeTransactionsExpense) {
         int totalValue =
             chartsService.getTotalValueFromDataMap(state.constDataMapExpense);
         Map<String, bool> selected =
-            state.dataMapExpense.map((key, value) => MapEntry(key, false));
+            state.constDataMapExpense.map((key, value) => MapEntry(key, false));
+
+        List<Color> colors = chartsService
+            .generateUniqueColors(state.constDataMapExpense.length);
+
+        Map<String, Color> constColorMap =
+            chartsService.getMapColor(state.constDataMapExpense, colors);
+
+        Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+
+
+        Map<String, double> dataMap = Map<String, double>.from(state.constDataMapExpense);
 
         emit(state.copyWith(
-          status: ChartsStatus.typeChanged,
-          dataMap: state.dataMapExpense,
+          status: state.dataMapExpense.isEmpty
+              ? ChartsStatus.dataMapEmpty
+              : ChartsStatus.typeExpense,
+          dataMap: dataMap,
           constDataMap: state.constDataMapExpense,
           selectedDataMap: selected,
           totalValue: totalValue,
+          constColorMap: constColorMap,
+          colorMap: colorMap,
         ));
       }
     } catch (e, st) {
@@ -253,6 +284,111 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       emit(state.copyWith(
         status: ChartsStatus.error,
         errorMessage: 'Ошибка во переключения между типами РАСХОДЫ и ДОХОДЫ',
+      ));
+    }
+  }
+
+  Future<void> _getTransactionsByDate(
+      ChartsGetTransactionByDateEvent event, Emitter<ChartsState> emit) async {
+    emit(state.copyWith(
+      status: ChartsStatus.loading,
+    ));
+
+    try {
+      List<TransactionModel> transactions =
+          await databaseService.getTransactions(
+              userUid: event.userUid,
+              rootCategoryUid: event.rootCategoryUid,
+              startDate: event.startDate,
+              endDate: event.endDate);
+
+      List<TransactionModel> listIncome = [];
+      List<TransactionModel> listExpense = [];
+
+      chartsService.divideTransactionsIntoIncomeAndExpense(
+          transactions: transactions,
+          listIncome: listIncome,
+          listExpense: listExpense);
+
+      // Доходы
+      Map<String, double> dataMapIncome =
+          chartsService.transactionsToMap(listIncome);
+
+      Map<String, double> constDataMapIncome =
+          Map<String, double>.from(dataMapIncome);
+
+      Map<String, bool> selectedIncome =
+          constDataMapIncome.map((key, value) => MapEntry(key, false));
+
+      int totalValueIncome =
+          chartsService.getTotalValueFromDataMap(dataMapIncome);
+
+      // Расходы
+      Map<String, double> dataMapExpense =
+          chartsService.transactionsToMap(listExpense);
+
+      Map<String, double> constDataMapExpense =
+          Map<String, double>.from(dataMapExpense);
+
+      Map<String, bool> selectedExpense =
+          constDataMapExpense.map((key, value) => MapEntry(key, false));
+
+      int totalValueExpense =
+          chartsService.getTotalValueFromDataMap(dataMapExpense);
+
+      // Цвета
+
+      List<Color> colors = [];
+      Map<String, Color> constColorsMap = {};
+      Map<String, Color> colorMap = {};
+
+      Map<String, double> dataMap = {};
+      Map<String, double> constDataMap = {};
+      Map<String, bool> selected = {};
+      int totalValue = 0;
+
+      // Смотрим какой тип графика изначально проссматривается ДОХОД ил РАСХОД
+      if (event.type == Globals.typeTransactionsExpense) {
+        dataMap = dataMapExpense;
+        constDataMap = constDataMapExpense;
+        totalValue = totalValueExpense;
+        selected = selectedExpense;
+      } else if (event.type == Globals.typeTransactionsIncome) {
+        dataMap = dataMapIncome;
+        constDataMap = constDataMapIncome;
+        totalValue = totalValueIncome;
+        selected = selectedIncome;
+      }
+
+      colors = chartsService.generateUniqueColors(dataMap.length);
+
+      constColorsMap = chartsService.getMapColor(constDataMap, colors);
+
+      colorMap = Map<String, Color>.from(constColorsMap);
+
+      emit(state.copyWith(
+        status:
+            dataMap.isEmpty ? ChartsStatus.dataMapEmpty : ChartsStatus.success,
+        errorMessage: '',
+        listTransactions: transactions,
+        dataMapExpense: dataMapExpense,
+        constDataMapExpense: constDataMapExpense,
+        constDataMapIncome: constDataMapIncome,
+        dataMapIncome: dataMapIncome,
+        dataMap: dataMap,
+        constDataMap: constDataMap,
+        totalValue: totalValue,
+        selectedDataMap: selected,
+        constColorMap: constColorsMap,
+        colorMap: colorMap,
+        startDate: event.startDate,
+        endDate: event.endDate,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: ChartsStatus.error,
+        errorMessage: 'Ошибка во время получения данных по дате',
       ));
     }
   }

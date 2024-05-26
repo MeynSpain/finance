@@ -5,6 +5,10 @@ class ChartsState extends Equatable {
   final List<TransactionModel> listTransactions;
   final String errorMessage;
 
+  // Даты
+  final DateTime startDate;
+  final DateTime endDate;
+
   // Расходы
   final Map<String, double> dataMapExpense;
   final Map<String, double> constDataMapExpense;
@@ -49,6 +53,8 @@ class ChartsState extends Equatable {
     // required this.totalValueIncome,
     required this.colorMap,
     required this.constColorMap,
+    required this.startDate,
+    required this.endDate,
   });
 
   factory ChartsState.initial() {
@@ -71,6 +77,9 @@ class ChartsState extends Equatable {
 
       colorMap: {},
       constColorMap: {},
+
+      endDate: DateTime.now(),
+      startDate: DateTime.now(),
     );
   }
 
@@ -93,6 +102,8 @@ class ChartsState extends Equatable {
     int? totalValue,
     Map<String, Color>? colorMap,
     Map<String, Color>? constColorMap,
+    DateTime? endDate,
+    DateTime? startDate,
   }) {
     return ChartsState._(
       status: status ?? this.status,
@@ -103,7 +114,7 @@ class ChartsState extends Equatable {
       // selectedMapExpense: selectedMapExpense ?? this.selectedMapExpense,
       // totalValueExpense: totalValueExpense ?? this.totalValueExpense,
       dataMapIncome: dataMapIncome ?? this.dataMapIncome,
-      constDataMapIncome: constDataMapExpense ?? this.constDataMapIncome,
+      constDataMapIncome: constDataMapIncome ?? this.constDataMapIncome,
       // selectedMapIncome: selectedMapExpense ?? this.selectedMapIncome,
       // totalValueIncome: totalValueIncome ?? this.totalValueIncome,\
       dataMap: dataMap ?? this.dataMap,
@@ -112,7 +123,17 @@ class ChartsState extends Equatable {
       totalValue: totalValue ?? this.totalValue,
       colorMap: colorMap ?? this.colorMap,
       constColorMap: constColorMap ?? this.constColorMap,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
+  }
+
+  String getStartDate() {
+    return '${startDate.day}.${startDate.month}.${startDate.year}';
+  }
+
+  String getEndDate() {
+    return '${endDate.day}.${endDate.month}.${endDate.year}';
   }
 
   @override
@@ -130,5 +151,7 @@ class ChartsState extends Equatable {
         constDataMapIncome,
         colorMap,
         constColorMap,
+        startDate,
+        endDate,
       ];
 }
