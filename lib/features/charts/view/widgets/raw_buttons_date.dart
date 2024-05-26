@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
@@ -68,7 +69,6 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
             DateTime endDate = DateTime.now();
             DateTime startDate =
                 DateTime(endDate.year, endDate.month, endDate.day);
-
 
 
             getTransactionsByDate(startDate, endDate);

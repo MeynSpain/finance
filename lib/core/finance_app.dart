@@ -4,6 +4,7 @@ import 'package:finance/core/theme/theme.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
+import 'package:finance/features/charts/transaction_history/bloc/transaction_history_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +28,9 @@ class _FinanceAppState extends State<FinanceApp> {
         ),
         BlocProvider(
           create: (context) => getIt<TagsBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<TransactionHistoryBloc>(),
         ),
       ],
       child: MaterialApp(
