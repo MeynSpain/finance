@@ -5,6 +5,8 @@ class ChartsState extends Equatable {
   final List<TransactionModel> listTransactions;
   final String errorMessage;
 
+  final bool isByTags;
+
   // Даты
   final DateTime startDate;
   final DateTime endDate;
@@ -55,6 +57,7 @@ class ChartsState extends Equatable {
     required this.constColorMap,
     required this.startDate,
     required this.endDate,
+    required this.isByTags,
   });
 
   factory ChartsState.initial() {
@@ -80,6 +83,8 @@ class ChartsState extends Equatable {
 
       endDate: DateTime.now(),
       startDate: DateTime.now(),
+
+      isByTags: false,
     );
   }
 
@@ -104,6 +109,7 @@ class ChartsState extends Equatable {
     Map<String, Color>? constColorMap,
     DateTime? endDate,
     DateTime? startDate,
+    bool? isByTags,
   }) {
     return ChartsState._(
       status: status ?? this.status,
@@ -125,6 +131,7 @@ class ChartsState extends Equatable {
       constColorMap: constColorMap ?? this.constColorMap,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      isByTags: isByTags ?? this.isByTags,
     );
   }
 
@@ -153,5 +160,6 @@ class ChartsState extends Equatable {
         constColorMap,
         startDate,
         endDate,
+        isByTags,
       ];
 }

@@ -83,3 +83,9 @@ class CategoriesGetTagsEvent extends CategoriesEvent {
 
   CategoriesGetTagsEvent({required this.useUid});
 }
+
+class CategoriesSelectNewDateEvent extends CategoriesEvent {
+  final DateTime newDate;
+
+  CategoriesSelectNewDateEvent({required this.newDate});
+}

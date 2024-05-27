@@ -9,6 +9,7 @@ import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/categories/tags/view/widgets/tags_widget.dart';
 import 'package:finance/features/categories/tags/view/widgets/new_tag_widget.dart';
+import 'package:finance/features/categories/view/widgets/row_data_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +163,13 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                   ),
                 ],
               ),
-              Text('Категории'),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  'Категории',
+                  style: theme.textTheme.bodyLarge,
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -213,9 +220,13 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Text('Теги'),
+                child: Text(
+                  'Теги',
+                  style: theme.textTheme.bodyLarge,
+                ),
               ),
               TagsWidget(),
+              RowDataWidgets(),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -287,12 +298,15 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
       }
     }
 
+    Timestamp date =
+        Timestamp.fromDate(getIt<CategoriesBloc>().state.selectedDate);
+
     if (summa != '') {
       TransactionModel transactionModel = TransactionModel(
         amount: int.parse(summa),
         description: description,
         tags: tags,
-        timestamp: Timestamp.now(),
+        timestamp: date,
         type: !isIncome
             ? Globals.typeTransactionsExpense
             : Globals.typeTransactionsIncome,

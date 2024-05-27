@@ -44,3 +44,15 @@ class ChartsGetTransactionByDateEvent extends ChartsEvent {
     required this.type,
   });
 }
+
+class ChartsChangeOnTagsEvent extends ChartsEvent {
+  final String type;
+
+  ChartsChangeOnTagsEvent({required this.type});
+}
+
+class ChartsChangeOnCategoriesEvent extends ChartsEvent {
+  final String type;
+
+  ChartsChangeOnCategoriesEvent({required this.type});
+}

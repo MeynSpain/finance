@@ -2,6 +2,7 @@ import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/pair_model.dart';
+import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,25 @@ class ChartsService {
         (value) => value + transaction.amount.toDouble(),
         ifAbsent: () => transaction.amount.toDouble(),
       );
+    }
+
+    return transactionsMap;
+  }
+
+  Map<String, double> transactionsToMapByTags(
+      List<TransactionModel> transactions) {
+    Map<String, double> transactionsMap = {};
+
+    for (TransactionModel transaction in transactions) {
+      if (transaction.tags != null) {
+        for (TagModel tag in transaction.tags!) {
+          transactionsMap.update(
+            tag.name,
+            (value) => value + transaction.amount.toDouble(),
+            ifAbsent: () => transaction.amount.toDouble(),
+          );
+        }
+      }
     }
 
     return transactionsMap;

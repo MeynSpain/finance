@@ -27,6 +27,8 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
     on<ChartsToggleElementEvent>(_toggleElement);
     on<ChartsChangeTypeEvent>(_changeType);
     on<ChartsGetTransactionByDateEvent>(_getTransactionsByDate);
+    on<ChartsChangeOnTagsEvent>(_changeOnTags);
+    on<ChartsChangeOnCategoriesEvent>(_changeOnCategories);
   }
 
   Future<void> _getLastMonthTransactions(
@@ -223,62 +225,116 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
     ));
 
     try {
-      if (event.type == Globals.typeTransactionsIncome) {
-        int totalValue =
-            chartsService.getTotalValueFromDataMap(state.constDataMapIncome);
-        Map<String, bool> selected =
-            state.constDataMapIncome.map((key, value) => MapEntry(key, false));
+      Map<String, double> constDataMap = {};
 
-        List<Color> colors =
-            chartsService.generateUniqueColors(state.constDataMapIncome.length);
+      if (state.isByTags) {
+        List<TransactionModel> listIncome = [];
+        List<TransactionModel> listExpense = [];
 
-        Map<String, Color> constColorMap =
-            chartsService.getMapColor(state.constDataMapIncome, colors);
+        chartsService.divideTransactionsIntoIncomeAndExpense(
+          transactions: state.listTransactions,
+          listIncome: listIncome,
+          listExpense: listExpense,
+        );
 
-        Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
-
-        Map<String, double> dataMap = Map<String, double>.from(state.constDataMapIncome);
-
-        emit(state.copyWith(
-          status: state.dataMapIncome.isEmpty
-              ? ChartsStatus.dataMapEmpty
-              : ChartsStatus.typeIncome,
-          dataMap: dataMap,
-          constDataMap: state.constDataMapIncome,
-          selectedDataMap: selected,
-          totalValue: totalValue,
-          colorMap: colorMap,
-          constColorMap: constColorMap,
-        ));
-      } else if (event.type == Globals.typeTransactionsExpense) {
-        int totalValue =
-            chartsService.getTotalValueFromDataMap(state.constDataMapExpense);
-        Map<String, bool> selected =
-            state.constDataMapExpense.map((key, value) => MapEntry(key, false));
-
-        List<Color> colors = chartsService
-            .generateUniqueColors(state.constDataMapExpense.length);
-
-        Map<String, Color> constColorMap =
-            chartsService.getMapColor(state.constDataMapExpense, colors);
-
-        Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
-
-
-        Map<String, double> dataMap = Map<String, double>.from(state.constDataMapExpense);
-
-        emit(state.copyWith(
-          status: state.dataMapExpense.isEmpty
-              ? ChartsStatus.dataMapEmpty
-              : ChartsStatus.typeExpense,
-          dataMap: dataMap,
-          constDataMap: state.constDataMapExpense,
-          selectedDataMap: selected,
-          totalValue: totalValue,
-          constColorMap: constColorMap,
-          colorMap: colorMap,
-        ));
+        if (event.type == Globals.typeTransactionsExpense) {
+          constDataMap = chartsService.transactionsToMapByTags(listExpense);
+        } else if (event.type == Globals.typeTransactionsIncome) {
+          constDataMap = chartsService.transactionsToMapByTags(listIncome);
+        }
+      } else {
+        if (event.type == Globals.typeTransactionsExpense) {
+          constDataMap = state.constDataMapExpense;
+        } else if (event.type == Globals.typeTransactionsIncome) {
+          constDataMap = state.constDataMapIncome;
+        }
       }
+
+      Map<String, double> dataMap = Map<String, double>.from(constDataMap);
+
+      int totalValue = chartsService.getTotalValueFromDataMap(constDataMap);
+
+      Map<String, bool> selected =
+          constDataMap.map((key, value) => MapEntry(key, false));
+
+      List<Color> colors =
+          chartsService.generateUniqueColors(constDataMap.length);
+
+      Map<String, Color> constColorMap =
+          chartsService.getMapColor(constDataMap, colors);
+
+      Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+
+      emit(state.copyWith(
+        status: state.dataMapIncome.isEmpty
+            ? ChartsStatus.dataMapEmpty
+            : ChartsStatus.success,
+        dataMap: dataMap,
+        constDataMap: constDataMap,
+        selectedDataMap: selected,
+        totalValue: totalValue,
+        colorMap: colorMap,
+        constColorMap: constColorMap,
+      ));
+
+      // if (event.type == Globals.typeTransactionsIncome) {
+      //   int totalValue =
+      //       chartsService.getTotalValueFromDataMap(state.constDataMapIncome);
+      //
+      //   Map<String, bool> selected =
+      //       state.constDataMapIncome.map((key, value) => MapEntry(key, false));
+      //
+      //   List<Color> colors =
+      //       chartsService.generateUniqueColors(state.constDataMapIncome.length);
+      //
+      //   Map<String, Color> constColorMap =
+      //       chartsService.getMapColor(state.constDataMapIncome, colors);
+      //
+      //   Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+      //
+      //   Map<String, double> dataMap =
+      //       Map<String, double>.from(state.constDataMapIncome);
+      //
+      //   emit(state.copyWith(
+      //     status: state.dataMapIncome.isEmpty
+      //         ? ChartsStatus.dataMapEmpty
+      //         : ChartsStatus.typeIncome,
+      //     dataMap: dataMap,
+      //     constDataMap: state.constDataMapIncome,
+      //     selectedDataMap: selected,
+      //     totalValue: totalValue,
+      //     colorMap: colorMap,
+      //     constColorMap: constColorMap,
+      //   ));
+      // } else if (event.type == Globals.typeTransactionsExpense) {
+      //   int totalValue =
+      //       chartsService.getTotalValueFromDataMap(state.constDataMapExpense);
+      //   Map<String, bool> selected =
+      //       state.constDataMapExpense.map((key, value) => MapEntry(key, false));
+      //
+      //   List<Color> colors = chartsService
+      //       .generateUniqueColors(state.constDataMapExpense.length);
+      //
+      //   Map<String, Color> constColorMap =
+      //       chartsService.getMapColor(state.constDataMapExpense, colors);
+      //
+      //   Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+      //
+      //   Map<String, double> dataMap =
+      //       Map<String, double>.from(state.constDataMapExpense);
+      //
+      //   emit(state.copyWith(
+      //     status: state.dataMapExpense.isEmpty
+      //         ? ChartsStatus.dataMapEmpty
+      //         : ChartsStatus.typeExpense,
+      //     dataMap: dataMap,
+      //     constDataMap: state.constDataMapExpense,
+      //     selectedDataMap: selected,
+      //     totalValue: totalValue,
+      //     constColorMap: constColorMap,
+      //     colorMap: colorMap,
+      //   ));
+      // }
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(
@@ -383,12 +439,126 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
         colorMap: colorMap,
         startDate: event.startDate,
         endDate: event.endDate,
+        isByTags: false,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(
         status: ChartsStatus.error,
         errorMessage: 'Ошибка во время получения данных по дате',
+      ));
+    }
+  }
+
+  FutureOr<void> _changeOnTags(
+      ChartsChangeOnTagsEvent event, Emitter<ChartsState> emit) {
+    emit(state.copyWith(
+      status: ChartsStatus.loading,
+    ));
+
+    try {
+      List<TransactionModel> listIncome = [];
+      List<TransactionModel> listExpense = [];
+
+      chartsService.divideTransactionsIntoIncomeAndExpense(
+        transactions: state.listTransactions,
+        listIncome: listIncome,
+        listExpense: listExpense,
+      );
+
+      Map<String, double> constDataMap = {};
+
+      if (event.type == Globals.typeTransactionsExpense) {
+        constDataMap = chartsService.transactionsToMapByTags(listExpense);
+      } else {
+        constDataMap = chartsService.transactionsToMapByTags(listIncome);
+      }
+
+      Map<String, double> dataMap = Map<String, double>.from(constDataMap);
+
+      int totalValue = chartsService.getTotalValueFromDataMap(constDataMap);
+
+      Map<String, bool> selected =
+          constDataMap.map((key, value) => MapEntry(key, false));
+
+      List<Color> colors =
+          chartsService.generateUniqueColors(constDataMap.length);
+
+      Map<String, Color> constColorMap =
+          chartsService.getMapColor(constDataMap, colors);
+
+      Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+
+      getIt<Talker>().info('SELECTED: $selected');
+
+      emit(state.copyWith(
+        status:
+            dataMap.isEmpty ? ChartsStatus.dataMapEmpty : ChartsStatus.success,
+        dataMap: dataMap,
+        constDataMap: constDataMap,
+        selectedDataMap: selected,
+        totalValue: totalValue,
+        constColorMap: constColorMap,
+        colorMap: colorMap,
+        isByTags: true,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: ChartsStatus.error,
+        errorMessage: 'Ошибка во смены графика на теги',
+      ));
+    }
+  }
+
+  FutureOr<void> _changeOnCategories(
+      ChartsChangeOnCategoriesEvent event, Emitter<ChartsState> emit) {
+    emit(state.copyWith(
+      status: ChartsStatus.loading,
+    ));
+
+    try {
+      Map<String, double> constDataMap = {};
+
+      if (event.type == Globals.typeTransactionsExpense) {
+        constDataMap = state.constDataMapExpense;
+      } else {
+        constDataMap = state.constDataMapIncome;
+      }
+
+      Map<String, double> dataMap = Map<String, double>.from(constDataMap);
+
+      int totalValue = chartsService.getTotalValueFromDataMap(constDataMap);
+
+      Map<String, bool> selected =
+          constDataMap.map((key, value) => MapEntry(key, false));
+
+      List<Color> colors =
+          chartsService.generateUniqueColors(constDataMap.length);
+
+      Map<String, Color> constColorMap =
+          chartsService.getMapColor(constDataMap, colors);
+
+      Map<String, Color> colorMap = Map<String, Color>.from(constColorMap);
+
+      getIt<Talker>().info('SELECTED: $selected');
+
+      emit(state.copyWith(
+        status:
+            dataMap.isEmpty ? ChartsStatus.dataMapEmpty : ChartsStatus.success,
+        dataMap: dataMap,
+        constDataMap: constDataMap,
+        selectedDataMap: selected,
+        totalValue: totalValue,
+        constColorMap: constColorMap,
+        colorMap: colorMap,
+        isByTags: false,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: ChartsStatus.error,
+        errorMessage: 'Ошибка во смены графика на категорииa',
       ));
     }
   }

@@ -29,74 +29,8 @@ class _ChartsPageState extends State<ChartsPage> {
 
   @override
   void initState() {
-    // colorList = generateUniqueColors(dataMap.length);
-    // print(colorList);
     super.initState();
   }
-
-  // Color hslToColor(double h, double s, double l) {
-  //   double chroma = (1.0 - (2.0 * l - 1.0).abs()) * s;
-  //   double x = chroma * (1.0 - ((h / 60.0) % 2 - 1.0).abs());
-  //   double m = l - chroma / 2.0;
-  //   double r = 0, g = 0, b = 0;
-  //
-  //   if (0 <= h && h < 60) {
-  //     r = chroma;
-  //     g = x;
-  //     b = 0;
-  //   } else if (60 <= h && h < 120) {
-  //     r = x;
-  //     g = chroma;
-  //     b = 0;
-  //   } else if (120 <= h && h < 180) {
-  //     r = 0;
-  //     g = chroma;
-  //     b = x;
-  //   } else if (180 <= h && h < 240) {
-  //     r = 0;
-  //     g = x;
-  //     b = chroma;
-  //   } else if (240 <= h && h < 300) {
-  //     r = x;
-  //     g = 0;
-  //     b = chroma;
-  //   } else if (300 <= h && h < 360) {
-  //     r = chroma;
-  //     g = 0;
-  //     b = x;
-  //   }
-  //
-  //   r = ((r + m) * 255).round().toDouble();
-  //   g = ((g + m) * 255).round().toDouble();
-  //   b = ((b + m) * 255).round().toDouble();
-  //
-  //   return Color.fromRGBO(r.toInt(), g.toInt(), b.toInt(), 1.0);
-  // }
-  //
-  // // Функция для генерации списка уникальных цветов
-  // List<Color> generateUniqueColors(int numberOfColors) {
-  //   double saturation = 1.0;
-  //   double lightness = 0.5;
-  //
-  //   List<Color> colors = [];
-  //   for (int i = 0; i < numberOfColors; i++) {
-  //     double hue = (i * 360 / numberOfColors) % 360;
-  //     colors.add(hslToColor(hue, saturation, lightness));
-  //     saturation = 0.7 + (i % 2) * 0.3;
-  //     lightness = 0.4 + ((i % 2) * 0.3);
-  //   }
-  //   return colors;
-  // }
-
-  // List<Color> generateColors(int count) {
-  //   List<Color> colors = [];
-  //   for (int i = 0; i < count; i++) {
-  //     double t = i / (count - 1);
-  //     // colors.add(Color.lerp(Colors.blue, Colors.red, t)!);
-  //     colors.add(Color.lerp(Color.fromRGBO(0, 0, 0, 1), Color.fromRGBO(255, 255, 255, 1), t)!);
-  //   }
-  //   return colors;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -104,25 +38,33 @@ class _ChartsPageState extends State<ChartsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Charts'),
+        actions: [
+          BlocBuilder<ChartsBloc, ChartsState>(
+            builder: (context, state) {
+              return ElevatedButton(
+                onPressed: () {
+                  if (state.isByTags) {
+                    getIt<ChartsBloc>().add(ChartsChangeOnCategoriesEvent(
+                        type: isIncome
+                            ? Globals.typeTransactionsIncome
+                            : Globals.typeTransactionsExpense));
+                  } else {
+                    getIt<ChartsBloc>().add(ChartsChangeOnTagsEvent(
+                        type: isIncome
+                            ? Globals.typeTransactionsIncome
+                            : Globals.typeTransactionsExpense));
+                  }
+                },
+                child: Text(
+                  state.isByTags ? 'По категориями' : 'По тегам',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              );
+            },
+          )
+        ],
       ),
-      body:
-          // BlocBuilder<ChartsBloc, ChartsState>(
-          //   builder: (context, state) {
-          //     if (state.status == ChartsStatus.loading) {
-          //       return const Center(child: CircularProgressIndicator());
-          //     } else if (state.listTransactions.isEmpty) {
-          //       return const PieChart(
-          //         colorList: colorList,
-          //         totalValue: 1,
-          // dataMap: {
-          //   '': 0,
-          // },
-          // legendOptions: LegendOptions(showLegends: false),
-          // chartType: ChartType.ring,
-          // centerText: 'Транзакции не найдены',
-          // );
-          // } else {
-          Padding(
+      body: Padding(
         padding: const EdgeInsets.only(
           left: 10,
           right: 10,
@@ -231,15 +173,18 @@ class _ChartsPageState extends State<ChartsPage> {
                                 width: 180,
                                 child: CircularProgressIndicator()));
                       } else if (state.listTransactions.isEmpty) {
-                        return const PieChart(
-                          // colorList: colorList,
-                          // totalValue: 1,
-                          dataMap: {
-                            '': 0,
-                          },
-                          legendOptions: LegendOptions(showLegends: false),
-                          chartType: ChartType.ring,
-                          centerText: 'Транзакции не найдены',
+                        return const SizedBox(
+                          height: 200,
+                          child: PieChart(
+                            // colorList: colorList,
+                            // totalValue: 1,
+                            dataMap: {
+                              '': 0,
+                            },
+                            legendOptions: LegendOptions(showLegends: false),
+                            chartType: ChartType.ring,
+                            centerText: 'Транзакции не найдены',
+                          ),
                         );
                       } else {
                         return SizedBox(
@@ -279,89 +224,100 @@ class _ChartsPageState extends State<ChartsPage> {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
-                }
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => SizedBox(
-                        height: 10,
-                      ),
-                      itemCount: state.constDataMap.length,
-                      itemBuilder: (context, index) {
-                        String key = state.constDataMap.keys.elementAt(index);
-                        return Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                              color: !state.selectedDataMap[key]!
-                                  ? state.constColorMap[key]
-                                  : state.constColorMap[key]?.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Row(
-                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // IconButton(onPressed: (){},icon: Icon(Icons.visibility),),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    getIt<ChartsBloc>().add(
-                                        ChartsToggleElementEvent(key: key));
-                                  },
-                                  child: !state.selectedDataMap[key]!
-                                      ? Icon(Icons.visibility)
-                                      : Icon(Icons.visibility_off),
-                                ),
-                              ),
-                              Flexible(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    getIt<TransactionHistoryBloc>().add(
-                                        TransactionHistoryLoadTransactionsEvent(
-                                            transactions:
-                                                state.listTransactions,
-                                            categoryName: key,
-                                            categories: getIt<CategoriesBloc>()
-                                                .state
-                                                .listUnsortedCategories));
-                                    Navigator.of(context)
-                                        .pushNamed('/charts/transactions');
-                                  },
+                } else {
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => SizedBox(
+                          height: 10,
+                        ),
+                        itemCount: state.constDataMap.length,
+                        itemBuilder: (context, index) {
+                          String key = state.constDataMap.keys.elementAt(index);
+                          getIt<Talker>().info('KEY: $key');
+                          return state.selectedDataMap[key] == null
+                              ? CircularProgressIndicator()
+                              : Container(
+                                  padding: EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: !state.selectedDataMap[key]!
+                                          ? state.constColorMap[key]
+                                          : state.constColorMap[key]
+                                              ?.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(30)),
                                   child: Row(
+                                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Flexible(
-                                        fit: FlexFit.tight,
-                                        flex: 4,
-                                        // fit: FlexFit.tight,
-                                        child: Container(
-                                            child: Text(
-                                          '$key',
-                                          style: theme.textTheme.bodyMedium,
-                                          overflow: TextOverflow.ellipsis,
-                                        )),
+                                      // IconButton(onPressed: (){},icon: Icon(Icons.visibility),),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 10),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            getIt<ChartsBloc>().add(
+                                                ChartsToggleElementEvent(
+                                                    key: key));
+                                          },
+                                          child: !state.selectedDataMap[key]!
+                                              ? Icon(Icons.visibility)
+                                              : Icon(Icons.visibility_off),
+                                        ),
                                       ),
                                       Flexible(
-                                        fit: FlexFit.loose,
-                                        flex: 2,
-                                        // fit: FlexFit.loose,
-                                        child: Container(
-                                          child: Text(
-                                            '${state.constDataMap[key]} руб.',
-                                            style: theme.textTheme.bodyMedium,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            getIt<TransactionHistoryBloc>().add(
+                                                TransactionHistoryLoadTransactionsEvent(
+                                                    transactions:
+                                                        state.listTransactions,
+                                                    categoryName: key,
+                                                    categories: getIt<
+                                                            CategoriesBloc>()
+                                                        .state
+                                                        .listUnsortedCategories));
+                                            Navigator.of(context).pushNamed(
+                                                '/charts/transactions');
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Flexible(
+                                                fit: FlexFit.tight,
+                                                flex: 4,
+                                                // fit: FlexFit.tight,
+                                                child: Container(
+                                                    child: Text(
+                                                  '$key',
+                                                  style: theme
+                                                      .textTheme.bodyMedium,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )),
+                                              ),
+                                              Flexible(
+                                                fit: FlexFit.loose,
+                                                flex: 2,
+                                                // fit: FlexFit.loose,
+                                                child: Container(
+                                                  child: Text(
+                                                    '${state.constDataMap[key]} руб.',
+                                                    style: theme
+                                                        .textTheme.bodyMedium,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                                );
+                        },
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
             ),
           ],

@@ -38,5 +38,7 @@ enum CategoriesStatus {
   gettingTags,
   tagsReceived,
 
+  selectingNewDate,
+  newDateSelected,
 
 }

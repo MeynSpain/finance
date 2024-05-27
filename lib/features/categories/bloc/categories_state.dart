@@ -7,6 +7,7 @@ class CategoriesState extends Equatable {
   final List<TransactionModel> listTransactions;
   final List<TagModel>? listTags;
   final List<CategoryModel> listUnsortedCategories;
+  final DateTime selectedDate;
   final String messageError;
 
   const CategoriesState._({
@@ -17,16 +18,18 @@ class CategoriesState extends Equatable {
     required this.listTransactions,
     this.listTags,
     required this.messageError,
+    required this.selectedDate,
   });
 
   factory CategoriesState.initial() {
-    return const CategoriesState._(
-        listCategories: [],
-        listUnsortedCategories: [],
-        status: CategoriesStatus.initial,
-        listTransactions: [],
-        listTags: [],
-        messageError: '',
+    return CategoriesState._(
+      listCategories: [],
+      listUnsortedCategories: [],
+      status: CategoriesStatus.initial,
+      listTransactions: [],
+      listTags: [],
+      messageError: '',
+      selectedDate: DateTime.now(),
     );
   }
 
@@ -38,22 +41,22 @@ class CategoriesState extends Equatable {
     List<TagModel>? listTags,
     List<CategoryModel>? listUnsortedCategories,
     String? messageError,
+    DateTime? selectedDate,
   }) {
     return CategoriesState._(
-      listCategories: listCategories ?? this.listCategories,
-      listUnsortedCategories:
-      listUnsortedCategories ?? this.listUnsortedCategories,
-      status: status ?? this.status,
-      listTransactions: listTransactions ?? this.listTransactions,
-      currentCategory: currentCategory ?? this.currentCategory,
-      listTags: listTags ?? this.listTags,
-      messageError: messageError ?? this.messageError,
-    );
+        listCategories: listCategories ?? this.listCategories,
+        listUnsortedCategories:
+            listUnsortedCategories ?? this.listUnsortedCategories,
+        status: status ?? this.status,
+        listTransactions: listTransactions ?? this.listTransactions,
+        currentCategory: currentCategory ?? this.currentCategory,
+        listTags: listTags ?? this.listTags,
+        messageError: messageError ?? this.messageError,
+        selectedDate: selectedDate ?? this.selectedDate);
   }
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         status,
         listCategories,
         currentCategory,
@@ -61,5 +64,6 @@ class CategoriesState extends Equatable {
         listTags,
         listUnsortedCategories,
         messageError,
+        selectedDate,
       ];
 }

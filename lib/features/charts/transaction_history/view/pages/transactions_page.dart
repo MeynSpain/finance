@@ -1,3 +1,4 @@
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/features/charts/transaction_history/bloc/transaction_history_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,8 @@ class TransactionsPage extends StatelessWidget {
                                     child: Container(
                                       child: Text(
                                         state.categoryName,
-                                        style: theme.textTheme.bodyLarge!.copyWith(
+                                        style:
+                                            theme.textTheme.bodyLarge!.copyWith(
                                           fontSize: 20,
                                         ),
                                         overflow: TextOverflow.ellipsis,
@@ -54,9 +56,15 @@ class TransactionsPage extends StatelessWidget {
                                     ),
                                     flex: 6,
                                   ),
-                                  Expanded(child: SizedBox(), flex: 1,),
+                                  Expanded(
+                                    child: SizedBox(),
+                                    flex: 1,
+                                  ),
                                   Text(
-                                    '${state.transactions[index].amount} руб.',
+                                    state.transactions[index].type ==
+                                            Globals.typeTransactionsExpense
+                                        ? '-${state.transactions[index].amount} руб.'
+                                        : '+${state.transactions[index].amount} руб.',
                                     style: theme.textTheme.bodyMedium!.copyWith(
                                       fontSize: 20,
                                     ),

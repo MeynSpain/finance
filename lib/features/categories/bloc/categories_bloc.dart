@@ -29,6 +29,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesUpdateBalanceEvent>(_updateBalance);
     on<CategoriesAddTagEvent>(_addTag);
     on<CategoriesGetTagsEvent>(_getTags);
+    on<CategoriesSelectNewDateEvent>(_selectNewDate);
   }
 
   Future<void> _initial(
@@ -247,7 +248,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
       // state.listCategories[indexOfCurrentCategory] = categoryModel;
 
-      CategoryModel? categoryModel = await databaseService.getCategory(categoryUid: event.rootCategoryUid, userUid: event.userUid);
+      CategoryModel? categoryModel = await databaseService.getCategory(
+          categoryUid: event.rootCategoryUid, userUid: event.userUid);
 
       emit(state.copyWith(
         status: CategoriesStatus.transactionAdded,
@@ -317,6 +319,27 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(
         status: CategoriesStatus.errorGettingTags,
+      ));
+    }
+  }
+
+  FutureOr<void> _selectNewDate(
+      CategoriesSelectNewDateEvent event, Emitter<CategoriesState> emit) {
+    emit(state.copyWith(
+      status: CategoriesStatus.selectingNewDate,
+    ));
+
+    try {
+      emit(state.copyWith(
+        messageError: '',
+        status: CategoriesStatus.newDateSelected,
+        selectedDate: event.newDate,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.errorGettingTags,
+        messageError: 'Ошибка во время выбора новой даты',
       ));
     }
   }

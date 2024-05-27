@@ -19,7 +19,7 @@ class TextDateWidget extends StatelessWidget {
               ? CircularProgressIndicator()
               : state.getStartDate() == state.getEndDate()
                   ? Text('${state.getStartDate()}')
-                  : Text('${state.getStartDate()} - ${state.getStartDate()}'),
+                  : Text('${state.getStartDate()} - ${state.getEndDate()}'),
           // : Text('aisdsahu $a $text'),
         );
       },

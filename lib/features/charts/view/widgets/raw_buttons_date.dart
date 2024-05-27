@@ -28,6 +28,11 @@ class RawButtonsDate extends StatefulWidget {
 class _RawButtonsDateState extends State<RawButtonsDate> {
   List<bool> selectedList = [false, false, false, false];
 
+  DateTimeRange selectedDays = DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now(),
+  );
+
   @override
   void initState() {
     selectedList[widget.startIndex] = true;
@@ -70,7 +75,6 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
             DateTime startDate =
                 DateTime(endDate.year, endDate.month, endDate.day);
 
-
             getTransactionsByDate(startDate, endDate);
           },
         ),
@@ -83,7 +87,7 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
             });
             DateTime endDate = DateTime.now();
             DateTime startDate =
-            DateTime(endDate.year, endDate.month, endDate.day - 7);
+                DateTime(endDate.year, endDate.month, endDate.day - 7);
 
             getIt<Talker>().info('$startDate   -    $endDate');
 
@@ -98,8 +102,7 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
               toggleValueInList(selectedList, 2);
             });
             DateTime endDate = DateTime.now();
-            DateTime startDate =
-            DateTime(endDate.year, endDate.month, 1);
+            DateTime startDate = DateTime(endDate.year, endDate.month, 1);
 
             getTransactionsByDate(startDate, endDate);
           },
@@ -107,12 +110,28 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
         ButtonDate(
           text: Globals.buttonDataPeriod,
           isActive: selectedList[3],
-          onPressed: () {
+          onPressed: () async {
             setState(() {
               toggleValueInList(selectedList, 3);
             });
+
+            DateTimeRange? dateTimeRage = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(3000),
+            );
+
+            if (dateTimeRage != null) {
+              setState(() {
+                selectedDays = dateTimeRage;
+              });
+              getTransactionsByDate(selectedDays.start, selectedDays.end);
+            }
+
+            getIt<Talker>().info('${selectedDays.start}  - ${selectedDays.end}');
           },
         ),
+        // Text('${selectedDays.start} - ${selectedDays.end}'),
       ],
     );
   }
