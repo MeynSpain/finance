@@ -38,4 +38,19 @@ class TransactionService {
 
     return resultList;
   }
+
+  Map<CategoryModel, double> getTotalValueByCategory(
+      {required List<PairModel<CategoryModel, TransactionModel>> pairs}) {
+    Map<CategoryModel, double> resultMap = {};
+
+    for (var pair in pairs) {
+      resultMap.update(
+        pair.first,
+        (value) => value + pair.second.amount.toDouble(),
+        ifAbsent: () => pair.second.amount.toDouble(),
+      );
+    }
+
+    return resultMap;
+  }
 }

@@ -24,3 +24,10 @@ class BarChartGetTransactionsByDateEvent extends BarChartEvent {
       required this.rootCategoryUid,
       required this.dateType});
 }
+
+class BarChartShowLegendEvent extends BarChartEvent {
+  final int groupIndex;
+  final int rodIndex;
+
+  BarChartShowLegendEvent({required this.groupIndex, required this.rodIndex});
+}

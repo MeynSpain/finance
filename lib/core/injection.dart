@@ -1,4 +1,5 @@
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
+import 'package:finance/features/bar_chart/legend/bloc/bar_legend_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
@@ -25,16 +26,16 @@ Future<void> init() async {
   getIt.registerSingleton(talker);
   getIt<Talker>().info('Application started...');
 
-
   // Регистрация блоков
   getIt.registerLazySingleton<CategoriesBloc>(() => CategoriesBloc());
   getIt.registerLazySingleton<ChartsBloc>(() => ChartsBloc());
   getIt.registerLazySingleton<TagsBloc>(() => TagsBloc());
-  getIt.registerLazySingleton<TransactionHistoryBloc>(() =>
-      TransactionHistoryBloc());
+  getIt.registerLazySingleton<TransactionHistoryBloc>(
+      () => TransactionHistoryBloc());
   getIt.registerLazySingleton<BarChartBloc>(() => BarChartBloc());
-  getIt.registerLazySingleton<LastTransactionsBloc>(() =>
-      LastTransactionsBloc());
+  getIt.registerLazySingleton<LastTransactionsBloc>(
+      () => LastTransactionsBloc());
+  getIt.registerLazySingleton<BarLegendBloc>(() => BarLegendBloc());
 
   //Talker bloc logger
   Bloc.observer = TalkerBlocObserver(
@@ -48,13 +49,10 @@ Future<void> init() async {
     getIt<Talker>()
         .info('Current User: ${FirebaseAuth.instance.currentUser!.uid}');
 
-    getIt<CategoriesBloc>().add(
-        CategoriesInitialEvent(
-            userUid: FirebaseAuth.instance.currentUser!.uid));
-
-    getIt<TagsBloc>().add(TagsGetAllTagsEvent(
+    getIt<CategoriesBloc>().add(CategoriesInitialEvent(
         userUid: FirebaseAuth.instance.currentUser!.uid));
 
-
+    getIt<TagsBloc>().add(
+        TagsGetAllTagsEvent(userUid: FirebaseAuth.instance.currentUser!.uid));
   }
 }

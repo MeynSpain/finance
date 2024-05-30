@@ -101,10 +101,14 @@ class BarChartService {
         BarChartRodData(
           toY: y1,
           color: Colors.green,
+          width: 15,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         ),
         BarChartRodData(
           toY: y2,
           color: Colors.red,
+          width: 15,
+          borderRadius:  BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         ),
       ],
     );

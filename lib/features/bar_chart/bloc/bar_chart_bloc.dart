@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:finance/core/constants/date_type.dart';
+import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/bar_chart_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/services/bar_chart_service.dart';
 import 'package:finance/core/services/database_service.dart';
+import 'package:finance/features/bar_chart/legend/bloc/bar_legend_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -23,6 +25,7 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
   BarChartBloc() : super(BarChartState.initial()) {
     on<BarChartInitialEvent>(_initial);
     on<BarChartGetTransactionsByDateEvent>(_getTransactionsByDate);
+    on<BarChartShowLegendEvent>(_showLegend);
   }
 
   Future<void> _initial(
@@ -99,9 +102,8 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
     ));
 
     try {
-
       List<TransactionModel> transactions =
-      await dataBaseService.getTransactions(
+          await dataBaseService.getTransactions(
         userUid: event.userUid,
         rootCategoryUid: event.rootCategoryUid,
         startDate: event.startDate,
@@ -111,16 +113,14 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
       Map<DateTime, List<TransactionModel>> transactionsMap = {};
 
       switch (event.dateType) {
-
         case DateType.weekDay:
           transactionsMap = barChartService.getTransactionsByDay(transactions);
         case DateType.month:
-          transactionsMap = barChartService.getTransactionsByMonth(transactions);
+          transactionsMap =
+              barChartService.getTransactionsByMonth(transactions);
         case DateType.year:
           transactionsMap = barChartService.getTransactionsByYear(transactions);
       }
-
-
 
       Map<DateTime, List<TransactionModel>> mapIncome = {};
       Map<DateTime, List<TransactionModel>> mapExpense = {};
@@ -143,10 +143,10 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
           endDate: event.endDate);
 
       List<BarChartGroupData> showingBarGroups =
-      barChartService.getListGroupData(
-          mapIncome: mapIncome,
-          mapExpense: mapExpense,
-          dateType: event.dateType);
+          barChartService.getListGroupData(
+              mapIncome: mapIncome,
+              mapExpense: mapExpense,
+              dateType: event.dateType);
 
       emit(state.copyWith(
         status: BarChartStatus.success,
@@ -164,5 +164,60 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
         errorMessage: 'Произошла ошибка во время получения транзакций',
       ));
     }
+  }
+
+  FutureOr<void> _showLegend(
+      BarChartShowLegendEvent event, Emitter<BarChartState> emit) {
+    event.groupIndex;
+    event.rodIndex;
+
+    List<TransactionModel>? transactions = [];
+
+    DateTime dateKey;
+
+    switch (state.dateType) {
+      case DateType.weekDay:
+        if (event.rodIndex == 0) {
+          dateKey = state.mapIncome.keys
+              .firstWhere((element) => element.weekday == event.groupIndex);
+        } else {
+          dateKey = state.mapExpense.keys
+              .firstWhere((element) => element.weekday == event.groupIndex);
+        }
+        break;
+      case DateType.month:
+        if (event.rodIndex == 0) {
+          dateKey = state.mapIncome.keys
+              .firstWhere((element) => element.month == event.groupIndex);
+        } else {
+          dateKey = state.mapExpense.keys
+              .firstWhere((element) => element.month == event.groupIndex);
+        }
+        break;
+      case DateType.year:
+        if (event.rodIndex == 0) {
+          dateKey = state.mapIncome.keys
+              .firstWhere((element) => element.year == event.groupIndex);
+        } else {
+          dateKey = state.mapExpense.keys
+              .firstWhere((element) => element.year == event.groupIndex);
+        }
+        break;
+    }
+
+    String typeTransaction;
+
+    if (event.rodIndex == 0) {
+      transactions = state.mapIncome[dateKey];
+      typeTransaction = Globals.typeTransactionsIncome;
+    } else {
+      transactions = state.mapExpense[dateKey];
+      typeTransaction = Globals.typeTransactionsExpense;
+    }
+
+    getIt<BarLegendBloc>().add(BarLegendShowNewLegendEvent(
+      transactions: transactions ?? [],
+      typeTransaction: typeTransaction,
+    ));
   }
 }

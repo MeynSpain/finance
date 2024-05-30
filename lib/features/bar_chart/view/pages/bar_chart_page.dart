@@ -3,10 +3,13 @@ import 'package:finance/core/constants/status/bar_chart_status.dart';
 import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
+import 'package:finance/features/bar_chart/legend/view/widgets/legend_widget.dart';
 import 'package:finance/features/bar_chart/view/widgets/row_button_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class BarChartPage extends StatefulWidget {
   const BarChartPage({super.key});
@@ -25,9 +28,8 @@ class _BarChartPageState extends State<BarChartPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
-            child: RowButtonWidget()
-          ),
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: RowButtonWidget()),
           AspectRatio(
             aspectRatio: 1,
             child: Container(
@@ -39,29 +41,49 @@ class _BarChartPageState extends State<BarChartPage> {
                       ? CircularProgressIndicator()
                       : BarChart(
                           BarChartData(
-                            titlesData: FlTitlesData(
-                                show: true,
-                                rightTitles: const AxisTitles(
-                                    sideTitles: SideTitles(
-                                  showTitles: false,
-                                )),
-                                topTitles: const AxisTitles(
-                                    sideTitles: SideTitles(
-                                  showTitles: false,
-                                )),
-                                bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 42,
-                                  getTitlesWidget: bottomTitle,
-                                ))),
-                            barGroups: state.showingBarGroups,
-                          ),
+                              titlesData: FlTitlesData(
+                                  show: true,
+                                  rightTitles: const AxisTitles(
+                                      sideTitles: SideTitles(
+                                    showTitles: false,
+                                  )),
+                                  topTitles: const AxisTitles(
+                                      sideTitles: SideTitles(
+                                    showTitles: false,
+                                  )),
+                                  bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 42,
+                                    getTitlesWidget: bottomTitle,
+                                  ))),
+                              barGroups: state.showingBarGroups,
+                              barTouchData: BarTouchData(
+                                touchCallback: (event, response) {
+
+                                  if (event is FlPanDownEvent) {
+                                    if (response?.spot?.touchedBarGroup != null) {
+                                      getIt<BarChartBloc>().add(
+                                          BarChartShowLegendEvent(
+                                              groupIndex: response!
+                                                  .spot!.touchedBarGroup.x,
+                                              rodIndex: response
+                                                  .spot!.touchedRodDataIndex));
+                                    }
+                                  }
+                                },
+                              )),
                         );
                 },
               ),
             ),
           ),
+          Expanded(
+            child: Container(
+              // color: Colors.red,
+              child: LegendWidget(),
+            ),
+          )
         ],
       ),
     );
