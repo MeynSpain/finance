@@ -20,65 +20,90 @@ class Templates {
   //   return listTags;
   // }
 
-  static CategoryModel getStartCategoryTemplate({required String name, required String userUid}) {
+  static CategoryModel getStartCategoryTemplate(
+      {required String name, required String userUid}) {
     CategoryModel startCategoryTemplate = CategoryModel(
-      userUid: userUid,
-      name: name,
-      balance: 0,
-      transactions: [],
-      childrenCategory: [
-        CategoryModel(
-          balance: 0,
-          name: Globals.rent,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.health,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.utilities,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.subscribes,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.products,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.leisure,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-        CategoryModel(
-          balance: 0,
-          name: Globals.transport,
-          userUid: userUid,
-          childrenCategory: [],
-          transactions: [],
-        ),
-      ]
-    );
+        userUid: userUid,
+        name: name,
+        balance: 0,
+        transactions: [],
+        childrenCategory: [
+          CategoryModel(
+            balance: 0,
+            name: Globals.rent,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.health,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.utilities,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.subscribes,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.products,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.leisure,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+          CategoryModel(
+            balance: 0,
+            name: Globals.transport,
+            userUid: userUid,
+            childrenCategory: [],
+            transactions: [],
+          ),
+        ]);
 
     return startCategoryTemplate;
   }
+
+  static const List<String> titlesWeekday = [
+    'Пн',
+    'Вт',
+    'Ср',
+    'Чт',
+    'Пт',
+    'Сб',
+    'Вс'
+  ];
+
+  static const List<String> titlesMonths = [
+    'Янв',
+    'Фев',
+    'Март',
+    'Апр',
+    'Май',
+    'Июнь',
+    'Июль',
+    'Авг',
+    'Сен',
+    'Окт',
+    'Ноя',
+    'Дек',
+  ];
 }

@@ -1,6 +1,7 @@
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/routes/routes.dart';
 import 'package:finance/core/theme/theme.dart';
+import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
@@ -31,6 +32,9 @@ class _FinanceAppState extends State<FinanceApp> {
         ),
         BlocProvider(
           create: (context) => getIt<TransactionHistoryBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<BarChartBloc>(),
         ),
       ],
       child: MaterialApp(

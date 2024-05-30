@@ -1,3 +1,4 @@
+import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
@@ -29,6 +30,7 @@ Future<void> init() async {
   getIt.registerLazySingleton<ChartsBloc>(() => ChartsBloc());
   getIt.registerLazySingleton<TagsBloc>(() => TagsBloc());
   getIt.registerLazySingleton<TransactionHistoryBloc>(() => TransactionHistoryBloc());
+  getIt.registerLazySingleton<BarChartBloc>(() => BarChartBloc());
 
   //Talker bloc logger
   Bloc.observer = TalkerBlocObserver(

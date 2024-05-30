@@ -379,7 +379,7 @@ class DatabaseService {
       listTransactions
           .add(TransactionModel.fromMap(doc.data() as Map<String, dynamic>));
     }
-    print(listTransactions);
+    // print(listTransactions);
 
     return listTransactions;
   }

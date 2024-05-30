@@ -17,7 +17,7 @@ class TransactionService {
       }
     }
 
-    resultTransactions.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
+    resultTransactions.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     return resultTransactions;
   }

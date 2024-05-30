@@ -28,8 +28,8 @@ class TransactionsPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            border: Border.all(color: Colors.grey),
+                            // color: Colors.grey[300],
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           padding: EdgeInsets.symmetric(
@@ -67,6 +67,10 @@ class TransactionsPage extends StatelessWidget {
                                         : '+${state.transactions[index].amount} руб.',
                                     style: theme.textTheme.bodyMedium!.copyWith(
                                       fontSize: 20,
+                                      color: state.transactions[index].type ==
+                                              Globals.typeTransactionsExpense
+                                          ? Colors.redAccent
+                                          : Colors.green,
                                     ),
                                   ),
                                 ],
