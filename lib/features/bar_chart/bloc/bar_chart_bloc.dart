@@ -108,8 +108,19 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
         endDate: event.endDate,
       );
 
-      Map<DateTime, List<TransactionModel>> transactionsMap =
-      barChartService.getTransactionsByDay(transactions);
+      Map<DateTime, List<TransactionModel>> transactionsMap = {};
+
+      switch (event.dateType) {
+
+        case DateType.weekDay:
+          transactionsMap = barChartService.getTransactionsByDay(transactions);
+        case DateType.month:
+          transactionsMap = barChartService.getTransactionsByMonth(transactions);
+        case DateType.year:
+          transactionsMap = barChartService.getTransactionsByYear(transactions);
+      }
+
+
 
       Map<DateTime, List<TransactionModel>> mapIncome = {};
       Map<DateTime, List<TransactionModel>> mapExpense = {};

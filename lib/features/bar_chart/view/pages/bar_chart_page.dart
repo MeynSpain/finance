@@ -3,6 +3,7 @@ import 'package:finance/core/constants/status/bar_chart_status.dart';
 import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
+import 'package:finance/features/bar_chart/view/widgets/row_button_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,14 +26,7 @@ class _BarChartPageState extends State<BarChartPage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(onPressed: (){}, child: Text('По годам')),
-                ElevatedButton(onPressed: (){}, child: Text('По месяцам')),
-                ElevatedButton(onPressed: (){}, child: Text('По дням')),
-              ],
-            ),
+            child: RowButtonWidget()
           ),
           AspectRatio(
             aspectRatio: 1,
@@ -90,7 +84,7 @@ class _BarChartPageState extends State<BarChartPage> {
 
     final Widget text = Text(
       getIt<BarChartBloc>().state.dateType == DateType.year
-          ? '$value'
+          ? '${value.toInt()}'
           : titles[value.toInt() - 1],
       // style: Tex,
     );

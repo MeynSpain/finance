@@ -7,8 +7,10 @@ import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
+import 'package:finance/features/last_transactions/view/last_transactions_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,13 +57,10 @@ class HomePage extends StatelessWidget {
             ],
           ),
           body: (state.status == CategoriesStatus.initial ||
-              state.status == CategoriesStatus.gettingAllCategories ||
-              state.status == CategoriesStatus.gettingTags)
+                  state.status == CategoriesStatus.gettingAllCategories ||
+                  state.status == CategoriesStatus.gettingTags)
               ? Center(child: CircularProgressIndicator())
-              : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
+              : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
@@ -91,12 +90,16 @@ class HomePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 18),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
                           onPressed: () {
-                            getIt<BarChartBloc>().add(BarChartInitialEvent(
-                                userUid: FirebaseAuth.instance.currentUser!.uid,
-                                rootCategoryUid: state.currentCategory!.uid!));
+                            getIt<BarChartBloc>().add(
+                                BarChartInitialEvent(
+                                    userUid: FirebaseAuth
+                                        .instance.currentUser!.uid,
+                                    rootCategoryUid:
+                                        state.currentCategory!.uid!));
                             Navigator.of(context).pushNamed('/barChart');
                           },
                           icon: Icon(
@@ -110,7 +113,7 @@ class HomePage extends StatelessWidget {
                                     userUid: FirebaseAuth
                                         .instance.currentUser!.uid,
                                     rootCategoryUid:
-                                    state.currentCategory!.uid!));
+                                        state.currentCategory!.uid!));
                             Navigator.of(context).pushNamed(
                               '/charts',
                             );
@@ -123,43 +126,18 @@ class HomePage extends StatelessWidget {
                   // SizedBox(
                   //   height: 68,
                   // ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 68),
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Доходы'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            textStyle: theme.textTheme.bodyMedium,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 30,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Расходы'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            textStyle: theme.textTheme.bodyMedium,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 30,
-                            ),
-                          ),
-                        ),
-                      ],
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      // color: Colors.red,
+                      child: LastTransactionsWidget(),
                     ),
                   ),
-                  Expanded(
-                      child: SizedBox(
-                        height: 1,
-                      )),
+                  // SizedBox(height: 10,),
+                  // Expanded(
+                  //     child: SizedBox(
+                  //       height: 1,
+                  //     )),
                   // SizedBox(height: ,),
                   Padding(
                     padding: EdgeInsets.only(bottom: 30),
@@ -172,7 +150,7 @@ class HomePage extends StatelessWidget {
 
                         getIt<TagsBloc>().add(TagsGetAllTagsEvent(
                             userUid:
-                            FirebaseAuth.instance.currentUser!.uid));
+                                FirebaseAuth.instance.currentUser!.uid));
 
                         Navigator.of(context)
                             .pushNamed('/newTransaction');
@@ -191,8 +169,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
         );
       },
     );

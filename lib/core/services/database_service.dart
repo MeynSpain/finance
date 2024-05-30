@@ -113,34 +113,11 @@ class DatabaseService {
       }
     });
 
-    /* Перенес сортировку в отдельный метод
-    List<int> listChildrenIndexes = [];
-
-    for (int i = 0; i < listCategories.length; i++) {
-      // Смотрим наличие с полем parentCategoryUid
-      if (listCategories[i].parentCategoryUid != null) {
-        listChildrenIndexes.add(i);
-        // Теперь ищем в списке родительскую категорию и добавляем ей в список
-        // childrenCategory
-        CategoryModel category = listCategories.firstWhere(
-            (element) => element.uid == listCategories[i].parentCategoryUid);
-        category.childrenCategory.add(listCategories[i]);
-      }
-    }
-
-    // Теперь убрать лишние элементы из списка, т.к. они уже в дочерних категориях
-    for (int index in listChildrenIndexes.reversed) {
-      listCategories.removeAt(index);
-    }
-
-    // print(listCategories);
-     */
     return listCategories;
   }
 
   Future<CategoryModel?> getCategory(
       {required String categoryUid, required String userUid}) async {
-
     final querySnapshot = await db
         .collectionGroup(Globals.categories)
         .where(Globals.uid, isEqualTo: categoryUid)
@@ -151,13 +128,6 @@ class DatabaseService {
     for (var doc in querySnapshot.docs) {
       category = CategoryModel.fromMap(doc.data());
     }
-
-    // final snapshot = await docRef
-    //     .collection(Globals.categories)
-    //     .where(FieldPath.documentId, isEqualTo: categoryId)
-    //     .get();
-
-    // print(category);
 
     return category;
   }
@@ -195,20 +165,6 @@ class DatabaseService {
 
     return startTemplate;
   }
-
-  // Future<List<TagModel>> addTagsTemplate(String userUid) async {
-  //   List<TagModel> listTags = Templates.getStartTagsTemplate();
-  //
-  //   CollectionReference tagsCollectionReference =
-  //       db.collection(Globals.users).doc(userUid).collection(Globals.tags);
-  //
-  //   for (var tag in listTags) {
-  //     DocumentReference tagReference = tagsCollectionReference.doc();
-  //     tag.uid = tagReference.id;
-  //     await tagReference.set(tag.toMap());
-  //   }
-  //   return listTags;
-  // }
 
   Future<void> updateBalance(
       CategoryModel categoryModel, int newBalance) async {
@@ -260,7 +216,7 @@ class DatabaseService {
   }
 
   /// Добавляет транзакцию в бд
-  Future<void> addTransaction({
+  Future<TransactionModel> addTransaction({
     required TransactionModel transactionModel,
     required String rootCategoryUid,
     required String categoryUid,
@@ -311,46 +267,7 @@ class DatabaseService {
       }
     }
 
-    /// Осталось обновить балансы
-/*
-    QuerySnapshot querySnapshot = await db
-        .collectionGroup(Globals.categories)
-        .where(Globals.uid, isEqualTo: parentCategory.uid)
-        .where(Globals.userUid, isEqualTo: parentCategory.userUid)
-        .get();
-
-    for (var doc in querySnapshot.docs) {
-      print('${doc.id} => ${doc.data()}');
-    }
-
-    QueryDocumentSnapshot doc = querySnapshot.docs.first;
-
-    await doc.reference.update({
-      Globals.balance: FieldValue.increment(transactionModel.amount),
-      Globals.transactions: FieldValue.arrayUnion([transactionModel.toMap()])
-    });
-
-    CategoryModel currentCategory =
-        CategoryModel.fromMap(doc.data() as Map<String, dynamic>);
-
-    while (currentCategory.parentCategoryUid != null) {
-      QuerySnapshot querySnapshot = await db
-          .collectionGroup(Globals.categories)
-          .where(Globals.uid, isEqualTo: currentCategory.parentCategoryUid)
-          .where(Globals.userUid, isEqualTo: currentCategory.userUid)
-          .get();
-
-      await querySnapshot.docs.first.reference.update({
-        Globals.balance: FieldValue.increment(transactionModel.amount),
-      });
-
-      currentCategory = CategoryModel.fromMap(
-          querySnapshot.docs.first.data() as Map<String, dynamic>);
-    }
-
-    return currentCategory;
-
- */
+    return transactionModel;
   }
 
   Future<List<TransactionModel>> getTransactions(
@@ -382,5 +299,32 @@ class DatabaseService {
     // print(listTransactions);
 
     return listTransactions;
+  }
+
+  Future<List<TransactionModel>> getLastTransactions({
+    required String userUid,
+    required String rootCategoryUid,
+    required int count,
+  }) async {
+    List<TransactionModel> transactions = [];
+
+    CollectionReference transactionCollectionReference = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.categories)
+        .doc(rootCategoryUid)
+        .collection(Globals.transactions);
+
+    QuerySnapshot querySnapshot = await transactionCollectionReference
+        .orderBy(Globals.timestamp)
+        .limit(count)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      transactions
+          .add(TransactionModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+
+    return transactions;
   }
 }

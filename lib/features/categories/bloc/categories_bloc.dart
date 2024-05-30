@@ -10,6 +10,7 @@ import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/services/database_service.dart';
+import 'package:finance/features/last_transactions/bloc/last_transactions_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -32,8 +33,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesSelectNewDateEvent>(_selectNewDate);
   }
 
-  Future<void> _initial(
-      CategoriesInitialEvent event, Emitter<CategoriesState> emit) async {
+  Future<void> _initial(CategoriesInitialEvent event,
+      Emitter<CategoriesState> emit) async {
     emit(state.copyWith(
       status: CategoriesStatus.initial,
     ));
@@ -44,10 +45,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       ));
 
       List<CategoryModel> listUnsortedCategories =
-          await databaseService.getAllCategories(event.userUid);
+      await databaseService.getAllCategories(event.userUid);
 
       List<CategoryModel> listSortedCategories =
-          databaseService.sortCategoriesInTree(listUnsortedCategories);
+      databaseService.sortCategoriesInTree(listUnsortedCategories);
 
       emit(state.copyWith(
         status: CategoriesStatus.allCategoriesReceived,
@@ -55,6 +56,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         listCategories: listSortedCategories,
         currentCategory: listSortedCategories.first,
       ));
+
+      getIt<LastTransactionsBloc>().add(LastTransactionsInitialEvent(
+          userUid: event.userUid,
+          rootCategoryUid: listSortedCategories.first.uid!));
 
       getIt<Talker>()
           .debug('Текущая категория : ${listSortedCategories.first}');
@@ -109,7 +114,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       if (documentReference != null) {
         // Добавляем категорию в качестве тега
         TagModel tagModel =
-            TagModel(name: categoryModel.name!, type: Globals.typeCategory);
+        TagModel(name: categoryModel.name!, type: Globals.typeCategory);
         await databaseService.addTag(tagModel, event.userUid);
 
         // Проверяем есть ли родительская категория, если да, то добавляем к ней
@@ -158,10 +163,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
     try {
       List<CategoryModel> categories =
-          await databaseService.getAllCategories(event.userUid);
+      await databaseService.getAllCategories(event.userUid);
 
       List<CategoryModel> listSortedCategories =
-          databaseService.sortCategoriesInTree(categories);
+      databaseService.sortCategoriesInTree(categories);
 
       if (categories.isEmpty) {
         getIt<Talker>().debug('Почему то пустые категории');
@@ -227,7 +232,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
               emit(state.copyWith(
                 status: CategoriesStatus.errorManyTagCategory,
                 messageError:
-                    'Транзакция содержит больше одного тека типа Категория',
+                'Транзакция содержит больше одного тека типа Категория',
               ));
               return;
             }
@@ -235,7 +240,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         }
       }
 
-      await databaseService.addTransaction(
+      TransactionModel transactionModel =  await databaseService.addTransaction(
         userUid: event.userUid,
         categories: state.listUnsortedCategories,
         categoryUid: event.transactionModel.categoryUid!,
@@ -256,13 +261,17 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         currentCategory: categoryModel,
         // listCategories: state.listCategories,
       ));
+
+
+      getIt<LastTransactionsBloc>().add(LastTransactionsAddTransactionEvent(
+          transaction: transactionModel, categoryUid: transactionModel.categoryUid!));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
     }
   }
 
-  Future<void> _updateBalance(
-      CategoriesUpdateBalanceEvent event, Emitter<CategoriesState> emit) async {
+  Future<void> _updateBalance(CategoriesUpdateBalanceEvent event,
+      Emitter<CategoriesState> emit) async {
     emit(state.copyWith(
       status: CategoriesStatus.updatingBalance,
     ));
@@ -281,8 +290,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
-  Future<void> _addTag(
-      CategoriesAddTagEvent event, Emitter<CategoriesState> emit) async {
+  Future<void> _addTag(CategoriesAddTagEvent event,
+      Emitter<CategoriesState> emit) async {
     emit(state.copyWith(
       status: CategoriesStatus.addingTag,
     ));
@@ -302,8 +311,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
-  Future<void> _getTags(
-      CategoriesGetTagsEvent event, Emitter<CategoriesState> emit) async {
+  Future<void> _getTags(CategoriesGetTagsEvent event,
+      Emitter<CategoriesState> emit) async {
     emit(state.copyWith(
       status: CategoriesStatus.gettingTags,
     ));
@@ -323,8 +332,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
-  FutureOr<void> _selectNewDate(
-      CategoriesSelectNewDateEvent event, Emitter<CategoriesState> emit) {
+  FutureOr<void> _selectNewDate(CategoriesSelectNewDateEvent event,
+      Emitter<CategoriesState> emit) {
     emit(state.copyWith(
       status: CategoriesStatus.selectingNewDate,
     ));

@@ -7,6 +7,27 @@ import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class BarChartService {
+
+  /// Возращает Map, который будет содежать в себе все транзакции по годам
+  Map<DateTime, List<TransactionModel>> getTransactionsByYear(
+      List<TransactionModel> transactions) {
+    Map<DateTime, List<TransactionModel>> transactionsByYear = {};
+
+    for (TransactionModel transaction in transactions) {
+      DateTime? date = transaction.timestamp?.toDate();
+
+      if (date != null) {
+        DateTime monthKey = DateTime(date.year);
+        if (!transactionsByYear.containsKey(monthKey)) {
+          transactionsByYear[monthKey] = [];
+        }
+        transactionsByYear[monthKey]!.add(transaction);
+      }
+    }
+
+    return transactionsByYear;
+  }
+
   /// Возращает Map, который будет содежать в себе все транзакции по месяцам
   Map<DateTime, List<TransactionModel>> getTransactionsByMonth(
       List<TransactionModel> transactions) {
