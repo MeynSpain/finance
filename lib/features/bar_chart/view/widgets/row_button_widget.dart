@@ -48,68 +48,71 @@ class _RowButtonWidgetState extends State<RowButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: ButtonDateWidget(
-            text: 'По годам',
-            onPressed: () {
-              setState(() {
-                _toggleValueInList(_activeList, 0);
-              });
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: ButtonDateWidget(
+              text: 'По годам',
+              onPressed: () {
+                setState(() {
+                  _toggleValueInList(_activeList, 0);
+                });
 
-              DateTime endDate = DateTime.now();
-              DateTime startDate = DateTime(endDate.year - 4, 1, 1);
+                DateTime endDate = DateTime.now();
+                DateTime startDate = DateTime(endDate.year - 4, 1, 1);
 
-              _getTransactionsByDate(startDate, endDate, DateType.year);
+                _getTransactionsByDate(startDate, endDate, DateType.year);
 
-              getIt<Talker>().info('DATE: $startDate');
-            },
-            isActive: _activeList[0],
+                getIt<Talker>().info('DATE: $startDate');
+              },
+              isActive: _activeList[0],
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: ButtonDateWidget(
-            text: 'По месяцам',
-            onPressed: () {
-              setState(() {
-                _toggleValueInList(_activeList, 1);
-              });
-              DateTime endDate = DateTime.now();
-              DateTime startDate = DateTime(endDate.year, endDate.month - 4, 1);
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: ButtonDateWidget(
+              text: 'По месяцам',
+              onPressed: () {
+                setState(() {
+                  _toggleValueInList(_activeList, 1);
+                });
+                DateTime endDate = DateTime.now();
+                DateTime startDate = DateTime(endDate.year, endDate.month - 4, 1);
 
-              _getTransactionsByDate(startDate, endDate, DateType.month);
+                _getTransactionsByDate(startDate, endDate, DateType.month);
 
-              getIt<Talker>().info('DATE: $startDate');
-              getIt<Talker>().info('DATE: $endDate');
+                getIt<Talker>().info('DATE: $startDate');
+                getIt<Talker>().info('DATE: $endDate');
 
-            },
-            isActive: _activeList[1],
+              },
+              isActive: _activeList[1],
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: ButtonDateWidget(
-            text: 'По дням',
-            onPressed: () {
-              setState(() {
-                _toggleValueInList(_activeList, 2);
-              });
-              DateTime endDate = DateTime.now();
-              DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day - 4);
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: ButtonDateWidget(
+              text: 'По дням',
+              onPressed: () {
+                setState(() {
+                  _toggleValueInList(_activeList, 2);
+                });
+                DateTime endDate = DateTime.now();
+                DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day - 4);
 
-              _getTransactionsByDate(startDate, endDate, DateType.weekDay);
+                _getTransactionsByDate(startDate, endDate, DateType.weekDay);
 
-              getIt<Talker>().info('DATE: $startDate');
+                getIt<Talker>().info('DATE: $startDate');
 
-            },
-            isActive: _activeList[2],
+              },
+              isActive: _activeList[2],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
