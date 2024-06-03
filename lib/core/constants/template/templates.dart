@@ -1,4 +1,5 @@
 import 'package:finance/core/constants/globals.dart';
+import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 
@@ -20,66 +21,76 @@ class Templates {
   //   return listTags;
   // }
 
-  static CategoryModel getStartCategoryTemplate(
-      {required String name, required String userUid}) {
-    CategoryModel startCategoryTemplate = CategoryModel(
+  // static List<>
+
+  static AccountModel getStartAccountTemplate({required String userUid}) {
+    return AccountModel(
+      name: Globals.mainAccount,
+      balance: 0,
+      userUid: userUid,
+    );
+  }
+
+  static List<CategoryModel> getStartCategoryTemplate(
+      {required String userUid}) {
+    return [
+      CategoryModel(
         userUid: userUid,
-        name: name,
+        name: Globals.wages,
         balance: 0,
         transactions: [],
-        childrenCategory: [
-          CategoryModel(
-            balance: 0,
-            name: Globals.rent,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.health,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.utilities,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.subscribes,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.products,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.leisure,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-          CategoryModel(
-            balance: 0,
-            name: Globals.transport,
-            userUid: userUid,
-            childrenCategory: [],
-            transactions: [],
-          ),
-        ]);
-
-    return startCategoryTemplate;
+        childrenCategory: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.rent,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.health,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.utilities,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.subscribes,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.products,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.leisure,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+      CategoryModel(
+        balance: 0,
+        name: Globals.transport,
+        userUid: userUid,
+        childrenCategory: [],
+        transactions: [],
+      ),
+    ];
   }
 
   static const List<String> titlesWeekday = [

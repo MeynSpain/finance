@@ -5,10 +5,10 @@ abstract class ChartsEvent {}
 
 class ChartsGetLastMonthTransactionsEvent extends ChartsEvent {
   final String userUid;
-  final String rootCategoryUid;
+  final String accountUid;
 
   ChartsGetLastMonthTransactionsEvent(
-      {required this.userUid, required this.rootCategoryUid});
+      {required this.userUid, required this.accountUid});
 }
 
 class ChartsDeleteDataFromDataMapEvent extends ChartsEvent {
@@ -33,14 +33,14 @@ class ChartsGetTransactionByDateEvent extends ChartsEvent {
   final DateTime startDate;
   final DateTime endDate;
   final String userUid;
-  final String rootCategoryUid;
+  final String accountUid;
   final String type;
 
   ChartsGetTransactionByDateEvent({
     required this.startDate,
     required this.endDate,
     required this.userUid,
-    required this.rootCategoryUid,
+    required this.accountUid,
     required this.type,
   });
 }

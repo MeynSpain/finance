@@ -3,7 +3,8 @@ part of 'categories_bloc.dart';
 class CategoriesState extends Equatable {
   final CategoriesStatus status;
   final List<CategoryModel> listCategories;
-  final CategoryModel? currentCategory;
+  final List<AccountModel> listAccounts;
+  final AccountModel? currentAccount;
   final List<TransactionModel> listTransactions;
   final List<TagModel>? listTags;
   final List<CategoryModel> listUnsortedCategories;
@@ -14,7 +15,8 @@ class CategoriesState extends Equatable {
     required this.listCategories,
     required this.listUnsortedCategories,
     required this.status,
-    this.currentCategory,
+    required this.listAccounts,
+    this.currentAccount,
     required this.listTransactions,
     this.listTags,
     required this.messageError,
@@ -30,6 +32,7 @@ class CategoriesState extends Equatable {
       listTags: [],
       messageError: '',
       selectedDate: DateTime.now(),
+      listAccounts: [],
     );
   }
 
@@ -37,29 +40,33 @@ class CategoriesState extends Equatable {
     CategoriesStatus? status,
     List<CategoryModel>? listCategories,
     List<TransactionModel>? listTransactions,
-    CategoryModel? currentCategory,
+    AccountModel? currentAccount,
     List<TagModel>? listTags,
     List<CategoryModel>? listUnsortedCategories,
     String? messageError,
     DateTime? selectedDate,
+    List<AccountModel>? listAccounts,
   }) {
     return CategoriesState._(
-        listCategories: listCategories ?? this.listCategories,
-        listUnsortedCategories:
-            listUnsortedCategories ?? this.listUnsortedCategories,
-        status: status ?? this.status,
-        listTransactions: listTransactions ?? this.listTransactions,
-        currentCategory: currentCategory ?? this.currentCategory,
-        listTags: listTags ?? this.listTags,
-        messageError: messageError ?? this.messageError,
-        selectedDate: selectedDate ?? this.selectedDate);
+      listCategories: listCategories ?? this.listCategories,
+      listUnsortedCategories:
+          listUnsortedCategories ?? this.listUnsortedCategories,
+      status: status ?? this.status,
+      listTransactions: listTransactions ?? this.listTransactions,
+      currentAccount: currentAccount ?? this.currentAccount,
+      listTags: listTags ?? this.listTags,
+      messageError: messageError ?? this.messageError,
+      selectedDate: selectedDate ?? this.selectedDate,
+      listAccounts: listAccounts ?? this.listAccounts,
+    );
   }
 
   @override
   List<Object?> get props => [
         status,
         listCategories,
-        currentCategory,
+        currentAccount,
+        listAccounts,
         listTransactions,
         listTags,
         listUnsortedCategories,

@@ -38,6 +38,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
   // TagModel? lastTag;
   // bool isAdded = false;
   int _selectedIndex = 0;
+  int _selectedAccountIndex = 0;
 
   bool isIncome = false;
 
@@ -162,6 +163,58 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                     ),
                   ),
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  'Счет',
+                  style: theme.textTheme.bodyLarge,
+                ),
+              ),
+              BlocBuilder<CategoriesBloc, CategoriesState>(
+                builder: (context, state) {
+                  return state.status == CategoriesStatus.gettingAllCategories
+                      ? CircularProgressIndicator()
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: Wrap(
+                            spacing: 20,
+                            runSpacing: 20,
+                            alignment: WrapAlignment.start,
+                            children: List.generate(
+                              state.listAccounts.length,
+                              (index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedAccountIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                          width: 2,
+                                          color: _selectedAccountIndex == index
+                                              ? Colors.black
+                                              : Colors.grey),
+                                    ),
+                                    child: Text(
+                                      state.listAccounts[index].name,
+                                      style: TextStyle(
+                                        color: _selectedAccountIndex == index
+                                            ? Colors.black
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
@@ -314,12 +367,15 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
             .state
             .listUnsortedCategories[_selectedIndex]
             .uid,
+        accountUid: getIt<CategoriesBloc>()
+            .state
+            .listAccounts[_selectedAccountIndex]
+            .uid,
       );
 
       getIt<CategoriesBloc>().add(CategoriesAddTransactionEvent(
         userUid: FirebaseAuth.instance.currentUser!.uid,
         transactionModel: transactionModel,
-        rootCategoryUid: getIt<CategoriesBloc>().state.currentCategory!.uid!,
         isIncome: isIncome,
       ));
     }

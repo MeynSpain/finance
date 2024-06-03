@@ -5,10 +5,10 @@ abstract class LastTransactionsEvent {}
 
 class LastTransactionsInitialEvent extends LastTransactionsEvent {
   final String userUid;
-  final String rootCategoryUid;
+  final String accountUid;
 
   LastTransactionsInitialEvent(
-      {required this.userUid, required this.rootCategoryUid});
+      {required this.userUid, required this.accountUid});
 }
 
 class LastTransactionsAddTransactionEvent extends LastTransactionsEvent {

@@ -12,13 +12,13 @@ class RawButtonsDate extends StatefulWidget {
     super.key,
     required this.startIndex,
     required this.userUid,
-    required this.rootCategoryUid,
+    required this.accountUid,
     required this.type,
   });
 
   final int startIndex;
   final String userUid;
-  final String rootCategoryUid;
+  final String accountUid;
   String type;
 
   @override
@@ -53,7 +53,7 @@ class _RawButtonsDateState extends State<RawButtonsDate> {
     getIt<ChartsBloc>().add(ChartsGetTransactionByDateEvent(
       startDate: startDate,
       endDate: endDate,
-      rootCategoryUid: widget.rootCategoryUid,
+      accountUid: widget.accountUid,
       userUid: widget.userUid,
       type: widget.type,
     ));

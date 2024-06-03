@@ -43,7 +43,7 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
       List<TransactionModel> transactions =
           await dataBaseService.getTransactions(
         userUid: event.userUid,
-        rootCategoryUid: event.rootCategoryUid,
+        accountUid: event.accountUid,
         startDate: start,
         endDate: now,
       );
@@ -105,7 +105,7 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
       List<TransactionModel> transactions =
           await dataBaseService.getTransactions(
         userUid: event.userUid,
-        rootCategoryUid: event.rootCategoryUid,
+        accountUid: event.accountUid,
         startDate: event.startDate,
         endDate: event.endDate,
       );

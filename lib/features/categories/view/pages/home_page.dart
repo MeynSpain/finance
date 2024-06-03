@@ -61,114 +61,114 @@ class HomePage extends StatelessWidget {
                   state.status == CategoriesStatus.gettingTags)
               ? Center(child: CircularProgressIndicator())
               : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 38),
-                    child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'Баланс',
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                        // SizedBox(
-                        //   height: 16,
-                        // ),
-                        Text(
-                          '${state.currentCategory?.balance}',
-                          style: theme.textTheme.headlineLarge,
-                        ),
-                        // SizedBox(
-                        //   height: 16,
-                        // ),
-                        SvgPicture.asset('assets/icons/Rouble.svg'),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            getIt<BarChartBloc>().add(
-                                BarChartInitialEvent(
-                                    userUid: FirebaseAuth
-                                        .instance.currentUser!.uid,
-                                    rootCategoryUid:
-                                        state.currentCategory!.uid!));
-                            Navigator.of(context).pushNamed('/barChart');
-                          },
-                          icon: Icon(
-                            Icons.ac_unit,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: 38),
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            'Баланс',
+                            style: theme.textTheme.bodyLarge,
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            getIt<ChartsBloc>().add(
-                                ChartsGetLastMonthTransactionsEvent(
-                                    userUid: FirebaseAuth
-                                        .instance.currentUser!.uid,
-                                    rootCategoryUid:
-                                        state.currentCategory!.uid!));
-                            Navigator.of(context).pushNamed(
-                              '/charts',
-                            );
-                          },
-                          icon: SvgPicture.asset(Globals.chars_icon),
-                        ),
-                      ],
+                          // SizedBox(
+                          //   height: 16,
+                          // ),
+                          Text(
+                            '${state.currentAccount?.balance}',
+                            style: theme.textTheme.headlineLarge,
+                          ),
+                          // SizedBox(
+                          //   height: 16,
+                          // ),
+                          SvgPicture.asset('assets/icons/Rouble.svg'),
+                        ],
+                      ),
                     ),
-                  ),
-                  // SizedBox(
-                  //   height: 68,
-                  // ),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      // color: Colors.red,
-                      child: LastTransactionsWidget(),
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              getIt<BarChartBloc>().add(BarChartInitialEvent(
+                                userUid: FirebaseAuth.instance.currentUser!.uid,
+                                accountUid: getIt<CategoriesBloc>()
+                                    .state
+                                    .currentAccount!
+                                    .uid!,
+                              ));
+                              Navigator.of(context).pushNamed('/barChart');
+                            },
+                            icon: Icon(
+                              Icons.add_chart,
+                              size: 50,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              getIt<ChartsBloc>().add(
+                                  ChartsGetLastMonthTransactionsEvent(
+                                      userUid: FirebaseAuth
+                                          .instance.currentUser!.uid,
+                                      accountUid:
+                                          state.currentAccount!.uid!));
+                              Navigator.of(context).pushNamed(
+                                '/charts',
+                              );
+                            },
+                            icon: SvgPicture.asset(Globals.chars_icon),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // SizedBox(height: 10,),
-                  // Expanded(
-                  //     child: SizedBox(
-                  //       height: 1,
-                  //     )),
-                  // SizedBox(height: ,),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 30),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // getIt<CategoriesBloc>().add(
-                        //     CategoriesGetTagsEvent(
-                        //         useUid: FirebaseAuth
-                        //             .instance.currentUser!.uid));
+                    // SizedBox(
+                    //   height: 68,
+                    // ),
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 10),
+                        // color: Colors.red,
+                        child: LastTransactionsWidget(),
+                      ),
+                    ),
+                    // SizedBox(height: 10,),
+                    // Expanded(
+                    //     child: SizedBox(
+                    //       height: 1,
+                    //     )),
+                    // SizedBox(height: ,),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 30),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // getIt<CategoriesBloc>().add(
+                          //     CategoriesGetTagsEvent(
+                          //         useUid: FirebaseAuth
+                          //             .instance.currentUser!.uid));
 
-                        getIt<TagsBloc>().add(TagsGetAllTagsEvent(
-                            userUid:
-                                FirebaseAuth.instance.currentUser!.uid));
+                          getIt<TagsBloc>().add(TagsGetAllTagsEvent(
+                              userUid: FirebaseAuth.instance.currentUser!.uid));
 
-                        Navigator.of(context)
-                            .pushNamed('/newTransaction');
-                      },
-                      child: Text('Добавить'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        textStyle: theme.textTheme.bodyMedium,
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 140,
+                          Navigator.of(context).pushNamed('/newTransaction');
+                        },
+                        child: Text('Добавить'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          textStyle: theme.textTheme.bodyMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 140,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
         );
       },
     );

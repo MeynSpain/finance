@@ -65,10 +65,6 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                               amount: int.parse(text),
                               timestamp: Timestamp.now(),
                               type: Globals.typeTransactionsExpense,
-                              categoryUid: getIt<CategoriesBloc>()
-                                  .state
-                                  .currentCategory!
-                                  .uid,
                               userUid: FirebaseAuth.instance.currentUser!.uid,
                               description: 'Test description');
 
@@ -78,10 +74,6 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                             userUid: FirebaseAuth.instance.currentUser!.uid,
                             transactionModel: transaction,
                             isIncome: false,
-                            rootCategoryUid: getIt<CategoriesBloc>()
-                                .state
-                                .currentCategory!
-                                .uid!,
                           ));
                           // getIt<CategoriesBloc>().add(
                           //   CategoriesAddingCategoryEvent(

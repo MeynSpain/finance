@@ -156,8 +156,8 @@ class _ChartsPageState extends State<ChartsPage> {
                   RawButtonsDate(
                     startIndex: 2,
                     userUid: FirebaseAuth.instance.currentUser!.uid,
-                    rootCategoryUid:
-                        getIt<CategoriesBloc>().state.currentCategory!.uid!,
+                    accountUid:
+                        getIt<CategoriesBloc>().state.currentAccount!.uid!,
                     type: isIncome
                         ? Globals.typeTransactionsIncome
                         : Globals.typeTransactionsExpense,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/template/templates.dart';
+import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
@@ -116,6 +117,24 @@ class DatabaseService {
     return listCategories;
   }
 
+  /// Получение всех счетов из бд
+  Future<List<AccountModel>> getAllAccounts({required String userUid}) async {
+    List<AccountModel> listAccounts = [];
+
+    await db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.accounts)
+        .get()
+        .then((querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        listAccounts.add(AccountModel.fromMap(doc.data()));
+      }
+    });
+
+    return listAccounts;
+  }
+
   Future<CategoryModel?> getCategory(
       {required String categoryUid, required String userUid}) async {
     final querySnapshot = await db
@@ -132,36 +151,40 @@ class DatabaseService {
     return category;
   }
 
-  /// Создает и добавляет в базу данных шаблон начальных категорий
-  Future<CategoryModel> addStartCategoryTemplate(
+  Future<AccountModel> addStartAccountTemplate(
       {required String userUid}) async {
-    CategoryModel startTemplate = Templates.getStartCategoryTemplate(
-        name: 'Личный баланс', userUid: userUid);
+    AccountModel startTemplate =
+        Templates.getStartAccountTemplate(userUid: userUid);
 
-    DocumentReference docCategoryRef = db
+    DocumentReference docRef = db
         .collection(Globals.users)
         .doc(userUid)
-        .collection(Globals.categories)
+        .collection(Globals.accounts)
         .doc();
 
-    startTemplate.uid = docCategoryRef.id;
+    startTemplate.uid = docRef.id;
 
-    await docCategoryRef.set(startTemplate.toMap());
+    await docRef.set(startTemplate.toMap());
 
-    startTemplate.childrenCategory.forEach((childCategory) async {
-      childCategory.parentCategoryUid = startTemplate.uid;
-      DocumentReference docChildCategoryRef = db
-          .collection(Globals.users)
-          .doc(userUid)
-          .collection(Globals.categories)
-          .doc(startTemplate.uid)
-          .collection(Globals.categories)
-          .doc();
+    return startTemplate;
+  }
 
-      childCategory.uid = docChildCategoryRef.id;
+  /// Создает и добавляет в базу данных шаблон начальных категорий
+  Future<List<CategoryModel>> addStartCategoryTemplate(
+      {required String userUid}) async {
+    List<CategoryModel> startTemplate =
+        Templates.getStartCategoryTemplate(userUid: userUid);
 
-      await docChildCategoryRef.set(childCategory.toMap());
-    });
+    CollectionReference collectionCategoryRef = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.categories);
+
+    for (var category in startTemplate) {
+      DocumentReference docRef = collectionCategoryRef.doc();
+      category.uid = docRef.id;
+      await docRef.set(category.toMap());
+    }
 
     return startTemplate;
   }
@@ -218,9 +241,8 @@ class DatabaseService {
   /// Добавляет транзакцию в бд
   Future<TransactionModel> addTransaction({
     required TransactionModel transactionModel,
-    required String rootCategoryUid,
+    required String accountUid,
     required String categoryUid,
-    required List<CategoryModel> categories,
     required String userUid,
     bool isIncome = false,
   }) async {
@@ -229,15 +251,31 @@ class DatabaseService {
     DocumentReference transactionReference = db
         .collection(Globals.users)
         .doc(userUid)
-        .collection(Globals.categories)
-        .doc(rootCategoryUid)
+        .collection(Globals.accounts)
+        .doc(accountUid)
         .collection(Globals.transactions)
         .doc();
 
     transactionModel.uid = transactionReference.id;
 
-    transactionReference.set(transactionModel.toMap());
+    await transactionReference.set(transactionModel.toMap());
 
+    int amount = transactionModel.amount;
+
+    if (!isIncome) {
+      amount = amount * (-1);
+    }
+
+    await db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.accounts)
+        .doc(accountUid)
+        .update({
+      Globals.balance: FieldValue.increment(amount),
+    });
+
+    /*
     int index =
         categories.indexWhere((category) => category.uid == categoryUid);
 
@@ -267,12 +305,14 @@ class DatabaseService {
       }
     }
 
+     */
+
     return transactionModel;
   }
 
   Future<List<TransactionModel>> getTransactions(
       {required String userUid,
-      required String rootCategoryUid,
+      required String accountUid,
       required DateTime startDate,
       required DateTime endDate}) async {
     List<TransactionModel> listTransactions = [];
@@ -280,8 +320,8 @@ class DatabaseService {
     CollectionReference transactionCollectionReference = db
         .collection(Globals.users)
         .doc(userUid)
-        .collection(Globals.categories)
-        .doc(rootCategoryUid)
+        .collection(Globals.accounts)
+        .doc(accountUid)
         .collection(Globals.transactions);
 
     QuerySnapshot querySnapshot = await transactionCollectionReference
@@ -303,7 +343,7 @@ class DatabaseService {
 
   Future<List<TransactionModel>> getLastTransactions({
     required String userUid,
-    required String rootCategoryUid,
+    required String accountUid,
     required int count,
   }) async {
     List<TransactionModel> transactions = [];
@@ -311,8 +351,8 @@ class DatabaseService {
     CollectionReference transactionCollectionReference = db
         .collection(Globals.users)
         .doc(userUid)
-        .collection(Globals.categories)
-        .doc(rootCategoryUid)
+        .collection(Globals.accounts)
+        .doc(accountUid)
         .collection(Globals.transactions);
 
     QuerySnapshot querySnapshot = await transactionCollectionReference

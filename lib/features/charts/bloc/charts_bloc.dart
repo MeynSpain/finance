@@ -45,7 +45,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       List<TransactionModel> transactions =
           await databaseService.getTransactions(
               userUid: event.userUid,
-              rootCategoryUid: event.rootCategoryUid,
+              accountUid: event.accountUid,
               endDate: endDateTime,
               startDate: startDateTime);
 
@@ -114,6 +114,8 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
         selectedDataMap: selectedExpense,
         constColorMap: constColorsMap,
         colorMap: colorMap,
+        startDate: startDateTime,
+        endDate: endDateTime,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -354,7 +356,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       List<TransactionModel> transactions =
           await databaseService.getTransactions(
               userUid: event.userUid,
-              rootCategoryUid: event.rootCategoryUid,
+              accountUid: event.accountUid,
               startDate: event.startDate,
               endDate: event.endDate);
 

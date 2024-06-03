@@ -40,7 +40,7 @@ class _RowButtonWidgetState extends State<RowButtonWidget> {
         startDate: startDate,
         endDate: endDate,
         userUid: FirebaseAuth.instance.currentUser!.uid,
-        rootCategoryUid: getIt<CategoriesBloc>().state.currentCategory!.uid!,
+        accountUid: getIt<CategoriesBloc>().state.currentAccount!.uid!,
         dateType: dateType,
       ),
     );

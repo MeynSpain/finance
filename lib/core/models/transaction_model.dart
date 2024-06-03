@@ -9,6 +9,7 @@ class TransactionModel extends Equatable {
   String? uid;
   String? userUid;
   String? categoryUid;
+  String? accountUid;
   Timestamp? timestamp;
   String? description;
   String type;
@@ -27,6 +28,7 @@ class TransactionModel extends Equatable {
     required this.type,
     this.description,
     this.tags,
+    this.accountUid,
   });
 
   Map<String, dynamic> toMap() {
@@ -39,6 +41,7 @@ class TransactionModel extends Equatable {
       Globals.type: type,
       Globals.description: description,
       Globals.tags: tags?.map((tag) => tag.toMap()).toList(),
+      Globals.accountUid: accountUid,
     };
   }
 
@@ -51,6 +54,7 @@ class TransactionModel extends Equatable {
       timestamp: mapData[Globals.timestamp],
       type: mapData[Globals.type],
       description: mapData[Globals.description],
+      accountUid: mapData[Globals.accountUid],
       tags: (mapData?[Globals.tags] as List<dynamic>)
           .map((tag) => TagModel.fromMap(tag))
           .toList(),
@@ -60,7 +64,7 @@ class TransactionModel extends Equatable {
 
   @override
   String toString() {
-    return 'TransactionModel{amount: $amount, uid: $uid, userUid: $userUid, categoryUid: $categoryUid, timestamp: $timestamp, description: $description, type: $type, tags: $tags}';
+    return 'TransactionModel{amount: $amount, uid: $uid, categoryUid: $categoryUid, accountUid: $accountUid, timestamp: $timestamp, description: $description, type: $type}';
   }
 
   @override

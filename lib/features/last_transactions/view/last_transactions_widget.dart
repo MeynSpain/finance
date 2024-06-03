@@ -12,8 +12,9 @@ class LastTransactionsWidget extends StatelessWidget {
     final theme = Theme.of(context);
     return BlocBuilder<LastTransactionsBloc, LastTransactionsState>(
       builder: (context, state) {
-        return state.status == LastTransactionsStatus.loading ||
-                state.status == LastTransactionsStatus.initial
+        return state.status == LastTransactionsStatus.loading
+            // ||
+            //     state.status == LastTransactionsStatus.initial
             ? CircularProgressIndicator()
             : ListView.builder(
                 itemCount: state.transactions.length,

@@ -1,10 +1,12 @@
 class Globals {
   Globals._();
 
-  // Категории
+  // Коллекции
 
   static const String users = 'users';
   static const String categories = 'categories';
+  static const String accounts = 'accounts';
+  static const String tags = 'tags';
 
   // static const String childrenCategories = 'childrenCategory';
 
@@ -23,11 +25,13 @@ class Globals {
   static const String timestamp = 'timestamp';
   static const String categoryUid = 'categoryUid';
   static const String description = 'description';
-  static const String tags = 'tags';
+  static const String accountUid = 'accountUid';
+
 
   // Название категорий
 
   static const String root = 'Личный баланс';
+  static const String wages = 'Заработная плата';
   static const String rent = 'Аренда';
   static const String health = 'Здоровье';
   static const String utilities = 'Коммунальные услуги';
@@ -35,6 +39,10 @@ class Globals {
   static const String subscribes = 'Подписки';
   static const String leisure = 'Досуг';
   static const String transport = 'Транспорт';
+
+  // Счета
+
+  static const String mainAccount = 'Основной счет';
 
   // Название полей в тегах
 

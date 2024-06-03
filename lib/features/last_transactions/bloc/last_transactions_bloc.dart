@@ -37,7 +37,7 @@ class LastTransactionsBloc
       List<TransactionModel> transactions =
           await databaseService.getLastTransactions(
               userUid: event.userUid,
-              rootCategoryUid: event.rootCategoryUid,
+              accountUid: event.accountUid,
               count: 5);
 
       List<PairModel<CategoryModel, TransactionModel>> pairs =
