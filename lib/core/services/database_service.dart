@@ -5,6 +5,7 @@ import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
+import 'package:finance/core/models/transfer_model.dart';
 import 'package:finance/core/models/user_model.dart';
 
 class DatabaseService {
@@ -68,6 +69,44 @@ class DatabaseService {
 
       return null;
     }
+  }
+
+  Future<AccountModel> addNewAccountModel(
+      {required String userUid, required AccountModel accountModel}) async {
+    AccountModel account = AccountModel(
+      name: accountModel.name,
+      balance: accountModel.balance,
+      userUid: accountModel.userUid,
+      type: accountModel.type,
+    );
+
+    DocumentReference docRef = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.accounts)
+        .doc();
+
+    account.uid = docRef.id;
+    await docRef.set(account.toMap());
+
+    return account;
+  }
+
+  Future<TransferModel> addNewTransfer(
+      {required String userUid, required TransferModel transferModel}) async {
+    TransferModel transfer = TransferModel.fromTransfer(transferModel);
+
+    DocumentReference docRef = db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.transfers)
+        .doc();
+
+    transfer.uid = docRef.id;
+
+    await docRef.set(transfer.toMap());
+
+    return transfer;
   }
 
   List<CategoryModel> sortCategoriesInTree(List<CategoryModel> listCategories) {

@@ -44,6 +44,14 @@ class Globals {
 
   static const String mainAccount = 'Основной счет';
 
+  // Переводы
+
+  static const String transfers = 'transfers';
+  static const String fromAccountUid = 'fromAccountUid';
+  static const String toAccountUid = 'toAccountUid';
+
+  static const String typeStartBalance = 'startBalance';
+
   // Название полей в тегах
 
   static const String type = 'type';
@@ -54,6 +62,12 @@ class Globals {
   static const String typeSimpleTag = 'simple tag';
   static const String typeTransactionsIncome = 'income';
   static const String typeTransactionsExpense = 'expense';
+
+  // Типы счетов
+
+  static const String typeAccountNonNullable = 'non nullable';
+  static const String typeAccountNullable = 'nullable';
+
 
 
 

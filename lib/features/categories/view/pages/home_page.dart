@@ -35,17 +35,12 @@ class HomePage extends StatelessWidget {
           appBar: AppBar(
             title: Text('${FirebaseAuth.instance.currentUser?.email}'),
             leading: IconButton(
-              icon: Icon(Icons.category),
+              icon: SvgPicture.asset('assets/icons/button.svg'),
               onPressed: () {
-                Navigator.of(context).pushNamed('/categories');
+                Navigator.of(context).pushNamed('/accounts');
               },
             ),
             actions: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/categories');
-                  },
-                  icon: SvgPicture.asset('assets/icons/button.svg')),
               IconButton(
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
@@ -69,7 +64,7 @@ class HomePage extends StatelessWidget {
                         // mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            'Баланс',
+                            state.currentAccount?.name ?? 'Баланс',
                             style: theme.textTheme.bodyLarge,
                           ),
                           // SizedBox(

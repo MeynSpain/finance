@@ -10,6 +10,7 @@ import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
+import 'package:finance/core/models/transfer_model.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/last_transactions/bloc/last_transactions_bloc.dart';
 import 'package:meta/meta.dart';
@@ -32,6 +33,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesAddTagEvent>(_addTag);
     on<CategoriesGetTagsEvent>(_getTags);
     on<CategoriesSelectNewDateEvent>(_selectNewDate);
+    on<CategoriesAddNewAccountEvent>(_addNewAccount);
   }
 
   Future<void> _initial(
@@ -65,8 +67,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       ));
 
       getIt<LastTransactionsBloc>().add(LastTransactionsInitialEvent(
-          userUid: event.userUid,
-          accountUid: listAccounts.first.uid!));
+          userUid: event.userUid, accountUid: listAccounts.first.uid!));
       //
       // getIt<Talker>()
       //     .debug('Текущая категория : ${listSortedCategories.first}');
@@ -260,7 +261,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
       List<AccountModel> accounts = state.listAccounts;
 
-      int index = accounts.indexWhere((element) => element.uid == event.transactionModel.accountUid);
+      int index = accounts.indexWhere(
+          (element) => element.uid == event.transactionModel.accountUid);
 
       int amount = event.transactionModel.amount;
 
@@ -283,7 +285,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       getIt<LastTransactionsBloc>().add(LastTransactionsAddTransactionEvent(
           transaction: transactionModel,
           categoryUid: transactionModel.categoryUid!));
-
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
     }
@@ -366,8 +367,50 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(
-        status: CategoriesStatus.errorGettingTags,
+        status: CategoriesStatus.error,
         messageError: 'Ошибка во время выбора новой даты',
+      ));
+    }
+  }
+
+  Future<void> _addNewAccount(
+      CategoriesAddNewAccountEvent event, Emitter<CategoriesState> emit) async {
+    emit(state.copyWith(status: CategoriesStatus.addingNewAccount));
+
+    try {
+      AccountModel accountModel = AccountModel(
+        name: event.name,
+        balance: event.balance,
+        userUid: event.userUid,
+        type: event.type,
+      );
+
+      accountModel = await databaseService.addNewAccountModel(
+          userUid: event.userUid, accountModel: accountModel);
+
+      // Еще добавить туда стартовый перевод
+
+      TransferModel transferModel = TransferModel(
+        userUid: event.userUid,
+        timestamp: Timestamp.now(),
+        description: 'Стартовый капитал',
+        amount: event.balance,
+        toAccountUid: accountModel.uid,
+        type: Globals.typeStartBalance,
+      );
+
+      transferModel = await databaseService.addNewTransfer(
+          userUid: event.userUid, transferModel: transferModel);
+
+      emit(state.copyWith(
+        status: CategoriesStatus.newAccountAdded,
+        listAccounts: [...state.listAccounts, accountModel],
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.errorAddingNewAccount,
+        messageError: 'Ошибка во добавление нового счета',
       ));
     }
   }

@@ -26,6 +26,20 @@ class CategoriesAddingCategoryEvent extends CategoriesEvent {
   });
 }
 
+class CategoriesAddNewAccountEvent extends CategoriesEvent {
+  final String userUid;
+  final String name;
+  final int balance;
+  final String type;
+
+  CategoriesAddNewAccountEvent({
+    required this.userUid,
+    required this.name,
+    required this.balance,
+    required this.type,
+  });
+}
+
 /// Считывание всех категорий из бд
 class CategoriesGetAllCategoriesEvent extends CategoriesEvent {
   final String userUid;

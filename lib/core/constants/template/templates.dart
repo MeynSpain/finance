@@ -28,6 +28,7 @@ class Templates {
       name: Globals.mainAccount,
       balance: 0,
       userUid: userUid,
+      type: Globals.typeAccountNonNullable,
     );
   }
 

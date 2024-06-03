@@ -6,12 +6,14 @@ class AccountModel extends Equatable {
   String? userUid;
   String name;
   int balance;
+  String type;
 
   AccountModel({
     this.uid,
     this.userUid,
     required this.name,
     required this.balance,
+    required this.type,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class AccountModel extends Equatable {
       Globals.userUid: userUid,
       Globals.name: name,
       Globals.balance: balance,
+      Globals.type: type,
     };
   }
 
@@ -29,13 +32,13 @@ class AccountModel extends Equatable {
       userUid: mapData[Globals.userUid],
       name: mapData[Globals.name],
       balance: mapData[Globals.balance],
+      type: mapData[Globals.type],
     );
   }
 
-
   @override
   String toString() {
-    return 'AccountModel{uid: $uid, userUid: $userUid, name: $name, balance: $balance}';
+    return 'AccountModel{uid: $uid, name: $name, type: $type, userUid: $userUid, balance: $balance}';
   }
 
   @override
@@ -44,5 +47,6 @@ class AccountModel extends Equatable {
         userUid,
         name,
         balance,
+        type,
       ];
 }

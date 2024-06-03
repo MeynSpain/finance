@@ -10,8 +10,13 @@ enum CategoriesStatus {
   errorAddingTag,
   errorGettingTags,
   errorManyTagCategory,
+  errorAddingNewAccount,
 
   initialSuccess,
+
+
+  addingNewAccount,
+  newAccountAdded,
 
   creatingCategory,
   addingCategory,

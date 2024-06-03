@@ -172,7 +172,7 @@ class _ChartsPageState extends State<ChartsPage> {
                                 height: 180,
                                 width: 180,
                                 child: CircularProgressIndicator()));
-                      } else if (state.listTransactions.isEmpty) {
+                      } else if (state.selectedDataMap.isEmpty) {
                         return const SizedBox(
                           height: 200,
                           child: PieChart(
