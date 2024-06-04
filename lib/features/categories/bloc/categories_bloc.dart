@@ -11,6 +11,7 @@ import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/models/transfer_model.dart';
+import 'package:finance/core/services/account_service.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/last_transactions/bloc/last_transactions_bloc.dart';
 import 'package:meta/meta.dart';
@@ -22,6 +23,7 @@ part 'categories_state.dart';
 
 class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   final DatabaseService databaseService = DatabaseService();
+  final AccountService accountService = AccountService();
 
   CategoriesBloc() : super(CategoriesState.initial()) {
     on<CategoriesInitialEvent>(_initial);
@@ -34,6 +36,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesGetTagsEvent>(_getTags);
     on<CategoriesSelectNewDateEvent>(_selectNewDate);
     on<CategoriesAddNewAccountEvent>(_addNewAccount);
+    on<CategoriesSelectNewAccountEvent>(_selectNewAccount);
   }
 
   Future<void> _initial(
@@ -53,6 +56,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       List<AccountModel> listAccounts =
           await databaseService.getAllAccounts(userUid: event.userUid);
 
+      int totalValue = accountService.getTotalBalance(listAccounts);
+
       List<CategoryModel> listSortedCategories =
           databaseService.sortCategoriesInTree(listUnsortedCategories);
 
@@ -64,6 +69,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         listAccounts: listAccounts,
         messageError: '',
         selectedDate: DateTime.now(),
+        totalBalance: totalValue,
       ));
 
       getIt<LastTransactionsBloc>().add(LastTransactionsInitialEvent(
@@ -272,12 +278,15 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
       accounts[index].balance += amount;
 
+      int totalValue = accountService.getTotalBalance(accounts);
+
       // CategoryModel? categoryModel = await databaseService.getCategory(
       //     categoryUid: event.rootCategoryUid, userUid: event.userUid);
 
       emit(state.copyWith(
         status: CategoriesStatus.transactionAdded,
         listAccounts: accounts,
+        totalBalance: totalValue,
         // currentCategory: categoryModel,
         // listCategories: state.listCategories,
       ));
@@ -383,6 +392,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         balance: event.balance,
         userUid: event.userUid,
         type: event.type,
+        isAccountedInTotalBalance: event.isAccountedInTotalBalance,
       );
 
       accountModel = await databaseService.addNewAccountModel(
@@ -393,7 +403,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       TransferModel transferModel = TransferModel(
         userUid: event.userUid,
         timestamp: Timestamp.now(),
-        description: 'Стартовый капитал',
+        description: 'Стартовый баланс',
         amount: event.balance,
         toAccountUid: accountModel.uid,
         type: Globals.typeStartBalance,
@@ -402,15 +412,46 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       transferModel = await databaseService.addNewTransfer(
           userUid: event.userUid, transferModel: transferModel);
 
+      int totalBalance = accountService.getTotalBalance([...state.listAccounts, accountModel]);
+
       emit(state.copyWith(
         status: CategoriesStatus.newAccountAdded,
         listAccounts: [...state.listAccounts, accountModel],
+        totalBalance: totalBalance,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(
         status: CategoriesStatus.errorAddingNewAccount,
         messageError: 'Ошибка во добавление нового счета',
+      ));
+    }
+  }
+
+  FutureOr<void> _selectNewAccount(
+      CategoriesSelectNewAccountEvent event, Emitter<CategoriesState> emit) {
+    emit(state.copyWith(
+      status: CategoriesStatus.selectingAccount,
+    ));
+
+    try {
+      if (state.currentAccount != event.accountModel) {
+        getIt<LastTransactionsBloc>()
+            .add(LastTransactionsSelectAccountEvent(
+          userUid: event.userUid,
+          accountUid: event.accountModel.uid!,
+        ));
+      }
+
+      emit(state.copyWith(
+        status: CategoriesStatus.accountSelected,
+        currentAccount: event.accountModel,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.errorAddingNewAccount,
+        messageError: 'Ошибка во время смены счета',
       ));
     }
   }

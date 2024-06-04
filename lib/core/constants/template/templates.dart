@@ -29,6 +29,7 @@ class Templates {
       balance: 0,
       userUid: userUid,
       type: Globals.typeAccountNonNullable,
+      isAccountedInTotalBalance: true,
     );
   }
 

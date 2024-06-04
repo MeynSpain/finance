@@ -78,6 +78,7 @@ class DatabaseService {
       balance: accountModel.balance,
       userUid: accountModel.userUid,
       type: accountModel.type,
+      isAccountedInTotalBalance: accountModel.isAccountedInTotalBalance,
     );
 
     DocumentReference docRef = db

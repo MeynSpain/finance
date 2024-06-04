@@ -25,6 +25,7 @@ class LastTransactionsBloc
   LastTransactionsBloc() : super(LastTransactionsState.initial()) {
     on<LastTransactionsInitialEvent>(_initialEvent);
     on<LastTransactionsAddTransactionEvent>(_addTransaction);
+    on<LastTransactionsSelectAccountEvent>(_selectAccount);
   }
 
   Future<void> _initialEvent(LastTransactionsInitialEvent event,
@@ -36,9 +37,7 @@ class LastTransactionsBloc
     try {
       List<TransactionModel> transactions =
           await databaseService.getLastTransactions(
-              userUid: event.userUid,
-              accountUid: event.accountUid,
-              count: 5);
+              userUid: event.userUid, accountUid: event.accountUid, count: 5);
 
       List<PairModel<CategoryModel, TransactionModel>> pairs =
           transactionService.getTransactionsByCategories(
@@ -89,6 +88,39 @@ class LastTransactionsBloc
       emit(state.copyWith(
         status: LastTransactionsStatus.error,
         errorMessage: 'Произошла ошибка во время добавления транзакции',
+      ));
+    }
+  }
+
+  Future<void> _selectAccount(LastTransactionsSelectAccountEvent event,
+      Emitter<LastTransactionsState> emit) async {
+    emit(state.copyWith(
+      status: LastTransactionsStatus.loading,
+    ));
+
+    try {
+      List<TransactionModel> transactions =
+          await databaseService.getLastTransactions(
+              userUid: event.userUid, accountUid: event.accountUid, count: 5);
+
+      List<PairModel<CategoryModel, TransactionModel>> pairs =
+          transactionService.getTransactionsByCategories(
+              categories: getIt<CategoriesBloc>().state.listUnsortedCategories,
+              transactions: transactions);
+
+      var reverse = pairs.reversed;
+      pairs = reverse.toList();
+
+      emit(state.copyWith(
+        status: LastTransactionsStatus.success,
+        transactions: pairs,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+
+      emit(state.copyWith(
+        status: LastTransactionsStatus.error,
+        errorMessage: 'Произошла ошибка во время смены счета',
       ));
     }
   }

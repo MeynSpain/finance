@@ -6,6 +6,7 @@ import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
+import 'package:finance/features/categories/view/dialogs/select_current_account_dialog.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
 import 'package:finance/features/last_transactions/view/last_transactions_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,13 +64,23 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         // mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(
-                            state.currentAccount?.name ?? 'Баланс',
-                            style: theme.textTheme.bodyLarge,
+                          TextButton(
+                            onPressed: () {
+                              showDialog(context: context, builder: (context) => SelectCurrentAccountDialog());
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                  style: theme.textTheme.bodyLarge,
+                                  children: [
+                                    TextSpan(
+                                      text: state.currentAccount?.name ??
+                                          'Баланс',
+                                    ),
+                                    WidgetSpan(
+                                        child: Icon(Icons.arrow_drop_down))
+                                  ]),
+                            ),
                           ),
-                          // SizedBox(
-                          //   height: 16,
-                          // ),
                           Text(
                             '${state.currentAccount?.balance}',
                             style: theme.textTheme.headlineLarge,
@@ -109,8 +120,7 @@ class HomePage extends StatelessWidget {
                                   ChartsGetLastMonthTransactionsEvent(
                                       userUid: FirebaseAuth
                                           .instance.currentUser!.uid,
-                                      accountUid:
-                                          state.currentAccount!.uid!));
+                                      accountUid: state.currentAccount!.uid!));
                               Navigator.of(context).pushNamed(
                                 '/charts',
                               );

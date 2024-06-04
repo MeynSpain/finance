@@ -7,6 +7,7 @@ class AccountModel extends Equatable {
   String name;
   int balance;
   String type;
+  bool? isAccountedInTotalBalance;
 
   AccountModel({
     this.uid,
@@ -14,6 +15,7 @@ class AccountModel extends Equatable {
     required this.name,
     required this.balance,
     required this.type,
+    this.isAccountedInTotalBalance,
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +25,7 @@ class AccountModel extends Equatable {
       Globals.name: name,
       Globals.balance: balance,
       Globals.type: type,
+      Globals.isAccountedInTotalBalance: isAccountedInTotalBalance,
     };
   }
 
@@ -33,6 +36,7 @@ class AccountModel extends Equatable {
       name: mapData[Globals.name],
       balance: mapData[Globals.balance],
       type: mapData[Globals.type],
+      isAccountedInTotalBalance: mapData[Globals.isAccountedInTotalBalance],
     );
   }
 
@@ -48,5 +52,6 @@ class AccountModel extends Equatable {
         name,
         balance,
         type,
+        isAccountedInTotalBalance,
       ];
 }

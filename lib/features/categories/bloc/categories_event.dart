@@ -31,13 +31,23 @@ class CategoriesAddNewAccountEvent extends CategoriesEvent {
   final String name;
   final int balance;
   final String type;
+  final bool isAccountedInTotalBalance;
 
   CategoriesAddNewAccountEvent({
     required this.userUid,
     required this.name,
     required this.balance,
     required this.type,
+    required this.isAccountedInTotalBalance,
   });
+}
+
+class CategoriesSelectNewAccountEvent extends CategoriesEvent {
+  final String userUid;
+  final AccountModel accountModel;
+
+  CategoriesSelectNewAccountEvent(
+      {required this.userUid, required this.accountModel});
 }
 
 /// Считывание всех категорий из бд

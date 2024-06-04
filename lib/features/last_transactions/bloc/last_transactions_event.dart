@@ -15,5 +15,15 @@ class LastTransactionsAddTransactionEvent extends LastTransactionsEvent {
   final TransactionModel transaction;
   final String categoryUid;
 
-  LastTransactionsAddTransactionEvent({required this.transaction, required this.categoryUid});
+  LastTransactionsAddTransactionEvent(
+      {required this.transaction, required this.categoryUid});
+}
+
+class LastTransactionsSelectAccountEvent
+    extends LastTransactionsEvent {
+  final String userUid;
+  final String accountUid;
+
+  LastTransactionsSelectAccountEvent(
+      {required this.userUid, required this.accountUid});
 }

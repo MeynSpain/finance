@@ -10,6 +10,7 @@ class CategoriesState extends Equatable {
   final List<CategoryModel> listUnsortedCategories;
   final DateTime selectedDate;
   final String messageError;
+  final int totalBalance;
 
   const CategoriesState._({
     required this.listCategories,
@@ -21,6 +22,7 @@ class CategoriesState extends Equatable {
     this.listTags,
     required this.messageError,
     required this.selectedDate,
+    required this.totalBalance,
   });
 
   factory CategoriesState.initial() {
@@ -33,6 +35,7 @@ class CategoriesState extends Equatable {
       messageError: '',
       selectedDate: DateTime.now(),
       listAccounts: [],
+      totalBalance: 0,
     );
   }
 
@@ -46,6 +49,7 @@ class CategoriesState extends Equatable {
     String? messageError,
     DateTime? selectedDate,
     List<AccountModel>? listAccounts,
+    int? totalBalance,
   }) {
     return CategoriesState._(
       listCategories: listCategories ?? this.listCategories,
@@ -58,6 +62,7 @@ class CategoriesState extends Equatable {
       messageError: messageError ?? this.messageError,
       selectedDate: selectedDate ?? this.selectedDate,
       listAccounts: listAccounts ?? this.listAccounts,
+      totalBalance: totalBalance ?? this.totalBalance,
     );
   }
 
@@ -72,5 +77,6 @@ class CategoriesState extends Equatable {
         listUnsortedCategories,
         messageError,
         selectedDate,
+        totalBalance,
       ];
 }

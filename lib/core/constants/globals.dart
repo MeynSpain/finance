@@ -49,6 +49,7 @@ class Globals {
   static const String transfers = 'transfers';
   static const String fromAccountUid = 'fromAccountUid';
   static const String toAccountUid = 'toAccountUid';
+  static const String isAccountedInTotalBalance = 'isAccountedInTotalBalance';
 
   static const String typeStartBalance = 'startBalance';
 

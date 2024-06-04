@@ -18,6 +18,9 @@ enum CategoriesStatus {
   addingNewAccount,
   newAccountAdded,
 
+  selectingAccount,
+  accountSelected,
+
   creatingCategory,
   addingCategory,
   addedCategory,
