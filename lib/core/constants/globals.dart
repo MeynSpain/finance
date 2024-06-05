@@ -52,6 +52,7 @@ class Globals {
   static const String isAccountedInTotalBalance = 'isAccountedInTotalBalance';
 
   static const String typeStartBalance = 'startBalance';
+  static const String typeTransferFromAccountToAccount = 'transferFromAccountToAccount';
 
   // Название полей в тегах
 
@@ -69,6 +70,11 @@ class Globals {
   static const String typeAccountNonNullable = 'non nullable';
   static const String typeAccountNullable = 'nullable';
 
+
+  // Типы категорий
+
+  static const String typeCategoryNonDeleted = 'categoryNonDeleted';
+  static const String typeCategoryTransfers = 'categoryTransfers';
 
 
 

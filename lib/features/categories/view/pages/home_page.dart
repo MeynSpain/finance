@@ -27,6 +27,8 @@ class HomePage extends StatelessWidget {
 
   final List<DocumentReference> listSubCategories = [];
 
+  String _selected = '1';
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -66,7 +68,10 @@ class HomePage extends StatelessWidget {
                         children: [
                           TextButton(
                             onPressed: () {
-                              showDialog(context: context, builder: (context) => SelectCurrentAccountDialog());
+                              showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      SelectCurrentAccountDialog());
                             },
                             child: RichText(
                               text: TextSpan(
@@ -109,10 +114,7 @@ class HomePage extends StatelessWidget {
                               ));
                               Navigator.of(context).pushNamed('/barChart');
                             },
-                            icon: Icon(
-                              Icons.add_chart,
-                              size: 50,
-                            ),
+                            icon: Image.asset('assets/icons/bar_charts.png'),
                           ),
                           IconButton(
                             onPressed: () {

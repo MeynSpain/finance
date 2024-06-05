@@ -3,6 +3,7 @@ import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({super.key});
@@ -19,14 +20,21 @@ class AccountsPage extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.center,
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+
           /// Итог
           Center(
             child: BlocBuilder<CategoriesBloc, CategoriesState>(
               builder: (context, state) {
                 return Column(
                   children: [
-                    Text('Общий баланс', style: theme.textTheme.bodyLarge,),
-                    Text('${state.totalBalance} руб.', style: theme.textTheme.bodyLarge,),
+                    Text(
+                      'Общий баланс',
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    Text(
+                      '${state.totalBalance} руб.',
+                      style: theme.textTheme.bodyLarge,
+                    ),
                   ],
                 );
               },
@@ -37,9 +45,14 @@ class AccountsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ElevatedButton(
-                  onPressed: () {}, child: Text('История переводов')),
-              ElevatedButton(onPressed: () {}, child: Text('Создать перевод')),
+              IconButton(
+                  onPressed: () {}, icon: Image.asset('assets/icons/history.png'),),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/transfers/newTransfer');
+                },
+                icon: Image.asset('assets/icons/new_transfer.png'),
+              ),
             ],
           ),
 

@@ -171,7 +171,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                   style: theme.textTheme.bodyLarge,
                 ),
               ),
-              BlocBuilder<CategoriesBloc, CategoriesState>(
+              BlocConsumer<CategoriesBloc, CategoriesState>(
                 builder: (context, state) {
                   return state.status == CategoriesStatus.gettingAllCategories
                       ? CircularProgressIndicator()
@@ -214,6 +214,14 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                             ),
                           ),
                         );
+                },
+                listener: (BuildContext context, CategoriesState state) {
+                  if (state.status == CategoriesStatus.errorNegativeBalance) {
+                    SnackBarService.showSnackBar(
+                        context,
+                        'Баланс выбранного счета не может быть отрицательным',
+                        true);
+                  }
                 },
               ),
               Padding(
@@ -360,6 +368,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
         description: description,
         tags: tags,
         timestamp: date,
+        userUid: FirebaseAuth.instance.currentUser!.uid,
         type: !isIncome
             ? Globals.typeTransactionsExpense
             : Globals.typeTransactionsIncome,

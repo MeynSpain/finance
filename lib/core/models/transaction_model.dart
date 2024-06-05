@@ -40,7 +40,7 @@ class TransactionModel extends Equatable {
       Globals.timestamp: timestamp,
       Globals.type: type,
       Globals.description: description,
-      Globals.tags: tags?.map((tag) => tag.toMap()).toList(),
+      Globals.tags: tags?.map((tag) => tag.toMap()).toList() ?? [],
       Globals.accountUid: accountUid,
     };
   }
@@ -55,12 +55,13 @@ class TransactionModel extends Equatable {
       type: mapData[Globals.type],
       description: mapData[Globals.description],
       accountUid: mapData[Globals.accountUid],
-      tags: (mapData?[Globals.tags] as List<dynamic>)
-          .map((tag) => TagModel.fromMap(tag))
-          .toList(),
+      tags: mapData[Globals.tags] == null
+          ? []
+          : (mapData[Globals.tags] as List<dynamic>)
+              .map((tag) => TagModel.fromMap(tag))
+              .toList(),
     );
   }
-
 
   @override
   String toString() {

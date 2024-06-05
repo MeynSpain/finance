@@ -11,15 +11,18 @@ class CategoryModel extends Equatable {
   String? parentCategoryUid;
   List<CategoryModel> childrenCategory = [];
   List<TransactionModel>? transactions;
+  String? type;
 
-  CategoryModel(
-      {this.uid,
-      this.userUid,
-      this.name,
-      this.balance,
-      this.parentCategoryUid,
-      required this.childrenCategory,
-      this.transactions});
+  CategoryModel({
+    this.uid,
+    this.userUid,
+    this.name,
+    this.balance,
+    this.parentCategoryUid,
+    required this.childrenCategory,
+    this.transactions,
+    this.type,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -28,6 +31,7 @@ class CategoryModel extends Equatable {
       Globals.name: name,
       Globals.balance: balance,
       Globals.parentCategoryUid: parentCategoryUid,
+      Globals.type: type,
       // Globals.transactions:
       //     transactions?.map((transaction) => transaction.toMap()).toList(),
       // 'childrenCategory':
@@ -47,6 +51,7 @@ class CategoryModel extends Equatable {
       name: mapData[Globals.name],
       balance: mapData[Globals.balance],
       parentCategoryUid: mapData[Globals.parentCategoryUid],
+      type: mapData[Globals.type],
       childrenCategory: [],
       // transactions: (mapData?[Globals.transactions] as List<dynamic>)
       //     .map((transaction) => TransactionModel.fromMap(transaction))
@@ -62,6 +67,7 @@ class CategoryModel extends Equatable {
         balance,
         parentCategoryUid,
         childrenCategory,
-        transactions
+        transactions,
+        type,
       ];
 }

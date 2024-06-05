@@ -12,6 +12,8 @@ enum CategoriesStatus {
   errorManyTagCategory,
   errorAddingNewAccount,
 
+  errorNegativeBalance,
+
   initialSuccess,
 
 

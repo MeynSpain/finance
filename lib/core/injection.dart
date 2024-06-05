@@ -5,6 +5,7 @@ import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
 import 'package:finance/features/charts/transaction_history/bloc/transaction_history_bloc.dart';
 import 'package:finance/features/last_transactions/bloc/last_transactions_bloc.dart';
+import 'package:finance/features/transfers/bloc/transfers_bloc.dart';
 import 'package:finance/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,6 +37,7 @@ Future<void> init() async {
   getIt.registerLazySingleton<LastTransactionsBloc>(
       () => LastTransactionsBloc());
   getIt.registerLazySingleton<BarLegendBloc>(() => BarLegendBloc());
+  getIt.registerLazySingleton<TransfersBloc>(() => TransfersBloc());
 
   //Talker bloc logger
   Bloc.observer = TalkerBlocObserver(

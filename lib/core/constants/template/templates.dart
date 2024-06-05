@@ -42,6 +42,15 @@ class Templates {
         balance: 0,
         transactions: [],
         childrenCategory: [],
+        // type: Globals.typeCategoryNonDeleted
+      ),
+      CategoryModel(
+        userUid: userUid,
+        name: 'Переводы',
+        balance: 0,
+        transactions: [],
+        childrenCategory: [],
+        type: Globals.typeCategoryTransfers,
       ),
       CategoryModel(
         balance: 0,
@@ -49,6 +58,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
       CategoryModel(
         balance: 0,
@@ -56,6 +66,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
       CategoryModel(
         balance: 0,
@@ -63,6 +74,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
       CategoryModel(
         balance: 0,
@@ -70,6 +82,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
       CategoryModel(
         balance: 0,
@@ -77,6 +90,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
       CategoryModel(
         balance: 0,
@@ -84,6 +98,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted
       ),
       CategoryModel(
         balance: 0,
@@ -91,6 +106,7 @@ class Templates {
         userUid: userUid,
         childrenCategory: [],
         transactions: [],
+        // type: Globals.typeCategoryNonDeleted,
       ),
     ];
   }

@@ -257,14 +257,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         }
       }
 
-      TransactionModel transactionModel = await databaseService.addTransaction(
-        userUid: event.userUid,
-        categoryUid: event.transactionModel.categoryUid!,
-        accountUid: event.transactionModel.accountUid!,
-        transactionModel: event.transactionModel,
-        isIncome: event.isIncome,
-      );
-
       List<AccountModel> accounts = state.listAccounts;
 
       int index = accounts.indexWhere(
@@ -276,9 +268,28 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         amount = amount * (-1);
       }
 
+      int accountBalance = accounts[index].balance;
+
+
+      if (accounts[index].type == Globals.typeAccountNonNullable &&
+          (accountBalance += amount) < 0) {
+        emit(state.copyWith(
+          status: CategoriesStatus.errorNegativeBalance,
+        ));
+        return;
+      }
+
       accounts[index].balance += amount;
 
       int totalValue = accountService.getTotalBalance(accounts);
+
+      TransactionModel transactionModel = await databaseService.addTransaction(
+        userUid: event.userUid,
+        categoryUid: event.transactionModel.categoryUid!,
+        accountUid: event.transactionModel.accountUid!,
+        transactionModel: event.transactionModel,
+        isIncome: event.isIncome,
+      );
 
       // CategoryModel? categoryModel = await databaseService.getCategory(
       //     categoryUid: event.rootCategoryUid, userUid: event.userUid);
@@ -412,7 +423,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       transferModel = await databaseService.addNewTransfer(
           userUid: event.userUid, transferModel: transferModel);
 
-      int totalBalance = accountService.getTotalBalance([...state.listAccounts, accountModel]);
+      int totalBalance =
+          accountService.getTotalBalance([...state.listAccounts, accountModel]);
 
       emit(state.copyWith(
         status: CategoriesStatus.newAccountAdded,
@@ -436,8 +448,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
     try {
       if (state.currentAccount != event.accountModel) {
-        getIt<LastTransactionsBloc>()
-            .add(LastTransactionsSelectAccountEvent(
+        getIt<LastTransactionsBloc>().add(LastTransactionsSelectAccountEvent(
           userUid: event.userUid,
           accountUid: event.accountModel.uid!,
         ));

@@ -8,6 +8,7 @@ import 'package:finance/features/categories/view/pages/home_page.dart';
 import 'package:finance/features/categories/view/pages/new_transaction_page.dart';
 import 'package:finance/features/charts/transaction_history/view/pages/transactions_page.dart';
 import 'package:finance/features/charts/view/pages/charts_page.dart';
+import 'package:finance/features/transfers/view/pages/new_transfer_page.dart';
 import 'package:finance/firebase_stream.dart';
 
 final routes = {
@@ -22,4 +23,5 @@ final routes = {
   '/barChart': (context) => BarChartPage(),
   '/accounts': (context) => AccountsPage(),
   '/accounts/newAccount': (context) => NewAccountPage(),
+  '/transfers/newTransfer': (context) => NewTransferPage(),
 };
