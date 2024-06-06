@@ -407,4 +407,28 @@ class DatabaseService {
 
     return transactions;
   }
+
+  Future<List<TransferModel>> getAllTransfersByDate({
+    required String userUid,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    List<TransferModel> transfers = [];
+
+    QuerySnapshot querySnapshot = await db
+        .collection(Globals.users)
+        .doc(userUid)
+        .collection(Globals.transfers)
+        .where(Globals.timestamp,
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+        .where(Globals.timestamp,
+            isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      transfers.add(TransferModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+
+    return transfers;
+  }
 }

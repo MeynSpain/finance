@@ -1,5 +1,8 @@
+import 'package:finance/core/injection.dart';
 import 'package:finance/features/categories/accounts/view/widgets/list_accounts_widget.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/transfers/bloc/transfers_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +23,6 @@ class AccountsPage extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.center,
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           /// Итог
           Center(
             child: BlocBuilder<CategoriesBloc, CategoriesState>(
@@ -46,10 +48,23 @@ class AccountsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                  onPressed: () {}, icon: Image.asset('assets/icons/history.png'),),
+                onPressed: () {
+                  DateTime now = DateTime.now();
+                  DateTime startDate = DateTime(now.year, now.month, 1);
+                  getIt<TransfersBloc>().add(
+                    TransfersGetAllTransfersByDateEvent(
+                      userUid: FirebaseAuth.instance.currentUser!.uid,
+                      startDate: startDate,
+                      endDate: now,
+                    ),
+                  );
+                  Navigator.of(context).pushNamed('/accounts/history');
+                },
+                icon: Image.asset('assets/icons/history.png'),
+              ),
               IconButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/transfers/newTransfer');
+                  Navigator.of(context).pushNamed('/accounts/newTransfer');
                 },
                 icon: Image.asset('assets/icons/new_transfer.png'),
               ),

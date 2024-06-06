@@ -10,6 +10,7 @@ import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/category_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/models/transfer_model.dart';
+import 'package:finance/core/models/view/viewTransferModel.dart';
 import 'package:finance/core/services/category_service.dart';
 import 'package:finance/core/services/database_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
@@ -27,6 +28,7 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
 
   TransfersBloc() : super(TransfersState.initial()) {
     on<TransferAddNewTransferEvent>(_addNewTransfer);
+    on<TransfersGetAllTransfersByDateEvent>(_getAllTransfersByDate);
   }
 
   Future<void> _addNewTransfer(
@@ -125,6 +127,40 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
       emit(state.copyWith(
         status: TransferStatus.error,
         errorMessage: 'Произошла ошибка во время перевода между счетами',
+      ));
+    }
+  }
+
+  Future<void> _getAllTransfersByDate(TransfersGetAllTransfersByDateEvent event,
+      Emitter<TransfersState> emit) async {
+    emit(state.copyWith(
+      status: TransferStatus.loading,
+    ));
+
+    try {
+      List<TransferModel> transfers =
+          await databaseService.getAllTransfersByDate(
+        userUid: event.userUid,
+        startDate: event.startDate,
+        endDate: event.endDate,
+      );
+
+      List<ViewTransferModel> viewTransfers = [];
+
+      for (var transfer in transfers) {
+        viewTransfers.add(ViewTransferModel.fromTransfer(transfer));
+      }
+
+      emit(state.copyWith(
+        status: TransferStatus.success,
+        transfers: transfers,
+        viewTransfers: viewTransfers,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: TransferStatus.error,
+        errorMessage: 'Произошла ошибка во время получения переводов',
       ));
     }
   }

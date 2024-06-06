@@ -20,3 +20,15 @@ class TransferAddNewTransferEvent extends TransfersEvent {
     required this.dateTime,
   });
 }
+
+class TransfersGetAllTransfersByDateEvent extends TransfersEvent {
+  final String userUid;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  TransfersGetAllTransfersByDateEvent({
+    required this.userUid,
+    required this.startDate,
+    required this.endDate,
+  });
+}
