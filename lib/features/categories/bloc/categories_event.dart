@@ -100,6 +100,12 @@ class CategoriesAddTagEvent extends CategoriesEvent {
   });
 }
 
+class CategoriesUpdateAccountsEvent extends CategoriesEvent {
+  final List<AccountModel> accounts;
+
+  CategoriesUpdateAccountsEvent({required this.accounts});
+}
+
 class CategoriesGetTagsEvent extends CategoriesEvent {
   final String useUid;
 

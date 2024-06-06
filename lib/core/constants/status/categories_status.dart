@@ -16,6 +16,8 @@ enum CategoriesStatus {
 
   initialSuccess,
 
+  updatingAccounts,
+  accountsUpdated,
 
   addingNewAccount,
   newAccountAdded,

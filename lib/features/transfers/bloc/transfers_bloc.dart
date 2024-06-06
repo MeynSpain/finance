@@ -127,10 +127,16 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
         transferModel: transferModel,
       );
 
+      event.fromAccount.balance -= event.amount;
+      event.toAccount.balance += event.amount;
+
       emit(state.copyWith(
         status: TransferStatus.success,
         transfers: [...state.transfers, transfer],
       ));
+
+      getIt<CategoriesBloc>().add(CategoriesUpdateAccountsEvent(
+          accounts: [event.fromAccount, event.toAccount]));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
       emit(state.copyWith(

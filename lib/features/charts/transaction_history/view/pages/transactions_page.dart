@@ -14,16 +14,14 @@ class TransactionsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Транзакции'),
       ),
-      body: SingleChildScrollView(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            children: [
-              BlocBuilder<TransactionHistoryBloc, TransactionHistoryState>(
-                builder: (context, state) {
-                  return ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height,
-                    ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            BlocBuilder<TransactionHistoryBloc, TransactionHistoryState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     child: ListView.separated(
                       itemBuilder: (context, index) {
                         return Container(
@@ -140,11 +138,13 @@ class TransactionsPage extends StatelessWidget {
                       },
                       itemCount: state.transactions.length,
                     ),
-                  );
-                },
-              ),
-            ],
-          )),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

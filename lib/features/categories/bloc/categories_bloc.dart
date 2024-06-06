@@ -37,6 +37,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesSelectNewDateEvent>(_selectNewDate);
     on<CategoriesAddNewAccountEvent>(_addNewAccount);
     on<CategoriesSelectNewAccountEvent>(_selectNewAccount);
+    on<CategoriesUpdateAccountsEvent>(_updateAccounts);
   }
 
   Future<void> _initial(
@@ -270,7 +271,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
       int accountBalance = accounts[index].balance;
 
-
       if (accounts[index].type == Globals.typeAccountNonNullable &&
           (accountBalance += amount) < 0) {
         emit(state.copyWith(
@@ -463,6 +463,37 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       emit(state.copyWith(
         status: CategoriesStatus.errorAddingNewAccount,
         messageError: 'Ошибка во время смены счета',
+      ));
+    }
+  }
+
+  FutureOr<void> _updateAccounts(
+      CategoriesUpdateAccountsEvent event, Emitter<CategoriesState> emit) {
+
+    emit(state.copyWith(
+      status: CategoriesStatus.updatingAccounts,
+    ));
+
+    try {
+
+      for (var account in event.accounts) {
+        int index = state.listAccounts.indexWhere((element) => element.uid == account.uid);
+        state.listAccounts[index] = account;
+      }
+
+      int totalValue = accountService.getTotalBalance(state.listAccounts);
+
+      emit(state.copyWith(
+        status: CategoriesStatus.accountsUpdated,
+        listAccounts: state.listAccounts,
+        totalBalance: totalValue,
+      ));
+
+    } catch(e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: CategoriesStatus.errorAddingNewAccount,
+        messageError: 'Ошибка во время обновления счетов',
       ));
     }
   }
