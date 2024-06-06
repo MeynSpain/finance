@@ -32,3 +32,19 @@ class TransfersGetAllTransfersByDateEvent extends TransfersEvent {
     required this.endDate,
   });
 }
+
+class TransferGetAccountsFromStateEvent extends TransfersEvent {
+
+}
+
+class TransfersSelectFromAccountEvent extends TransfersEvent {
+  final AccountModel fromAccount;
+
+  TransfersSelectFromAccountEvent({required this.fromAccount});
+}
+
+class TransfersSelectToAccountEvent extends TransfersEvent {
+  final AccountModel toAccount;
+
+  TransfersSelectToAccountEvent({required this.toAccount});
+}

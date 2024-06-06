@@ -369,6 +369,10 @@ class DatabaseService {
             isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where(Globals.timestamp,
             isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        .orderBy(
+          Globals.timestamp,
+          descending: true,
+        )
         .get();
     // QuerySnapshot querySnapshot = await transactionCollectionReference.get();
 
@@ -396,7 +400,7 @@ class DatabaseService {
         .collection(Globals.transactions);
 
     QuerySnapshot querySnapshot = await transactionCollectionReference
-        .orderBy(Globals.timestamp)
+        .orderBy(Globals.timestamp, descending: true)
         .limit(count)
         .get();
 
@@ -423,6 +427,7 @@ class DatabaseService {
             isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where(Globals.timestamp,
             isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        .orderBy(Globals.timestamp, descending: true)
         .get();
 
     for (var doc in querySnapshot.docs) {

@@ -29,6 +29,9 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
   TransfersBloc() : super(TransfersState.initial()) {
     on<TransferAddNewTransferEvent>(_addNewTransfer);
     on<TransfersGetAllTransfersByDateEvent>(_getAllTransfersByDate);
+    on<TransfersSelectFromAccountEvent>(_selectFromAccount);
+    on<TransfersSelectToAccountEvent>(_selectToAccount);
+    on<TransferGetAccountsFromStateEvent>(_getAccountFromState);
   }
 
   Future<void> _addNewTransfer(
@@ -102,13 +105,19 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
           isIncome: true,
         );
 
+        AccountModel currentAccount =
+            getIt<CategoriesBloc>().state.currentAccount!;
+
         List<TransactionModel> transactions =
             await Future.wait([transactionTo, transactionFrom]);
 
-        for (var transaction in transactions) {
+        int index = transactions.indexWhere(
+            (transaction) => transaction.accountUid == currentAccount.uid);
+
+        if (index != -1) {
           getIt<LastTransactionsBloc>().add(LastTransactionsAddTransactionEvent(
-            transaction: transaction,
-            categoryUid: transaction.categoryUid!,
+            transaction: transactions[index],
+            categoryUid: transactions[index].categoryUid!,
           ));
         }
       }
@@ -161,6 +170,70 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
       emit(state.copyWith(
         status: TransferStatus.error,
         errorMessage: 'Произошла ошибка во время получения переводов',
+      ));
+    }
+  }
+
+  FutureOr<void> _selectFromAccount(
+      TransfersSelectFromAccountEvent event, Emitter<TransfersState> emit) {
+    try {
+      state.notSelectedAccounts.remove(event.fromAccount);
+
+      emit(state.copyWith(
+        fromAccount: event.fromAccount,
+        notSelectedAccounts: state.notSelectedAccounts,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: TransferStatus.error,
+        errorMessage:
+            'Произошла ошибка во время выбора счета с которого происходит перевод',
+      ));
+    }
+  }
+
+  FutureOr<void> _selectToAccount(
+      TransfersSelectToAccountEvent event, Emitter<TransfersState> emit) {
+    try {
+      state.notSelectedAccounts.remove(event.toAccount);
+
+      emit(state.copyWith(
+        toAccount: event.toAccount,
+        notSelectedAccounts: state.notSelectedAccounts,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: TransferStatus.error,
+        errorMessage:
+            'Произошла ошибка во время выбора счета на который происходит перевод',
+      ));
+    }
+  }
+
+  FutureOr<void> _getAccountFromState(
+      TransferGetAccountsFromStateEvent event, Emitter<TransfersState> emit) {
+    emit(state.copyWith(
+      status: TransferStatus.loading,
+    ));
+
+    try {
+      List<AccountModel> accounts =
+          List.from(getIt<CategoriesBloc>().state.listAccounts);
+
+      List<AccountModel> notSelectedAccounts = List.from(accounts);
+
+      emit(state.copyWith(
+        status: TransferStatus.success,
+        accounts: accounts,
+        notSelectedAccounts: notSelectedAccounts,
+      ));
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: TransferStatus.error,
+        errorMessage: 'Произошла ошибка во время получения списка счетов',
       ));
     }
   }

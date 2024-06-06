@@ -64,6 +64,7 @@ class AccountsPage extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
+                  getIt<TransfersBloc>().add(TransferGetAccountsFromStateEvent());
                   Navigator.of(context).pushNamed('/accounts/newTransfer');
                 },
                 icon: Image.asset('assets/icons/new_transfer.png'),

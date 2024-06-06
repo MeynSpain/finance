@@ -44,8 +44,8 @@ class LastTransactionsBloc
               categories: getIt<CategoriesBloc>().state.listUnsortedCategories,
               transactions: transactions);
 
-      var reverse = pairs.reversed;
-      pairs = reverse.toList();
+      // var reverse = pairs.reversed;
+      // pairs = reverse.toList();
 
       emit(state.copyWith(
         status: LastTransactionsStatus.success,
@@ -101,15 +101,15 @@ class LastTransactionsBloc
     try {
       List<TransactionModel> transactions =
           await databaseService.getLastTransactions(
-              userUid: event.userUid, accountUid: event.accountUid, count: 5);
+              userUid: event.userUid, accountUid: event.accountUid, count: 20);
 
       List<PairModel<CategoryModel, TransactionModel>> pairs =
           transactionService.getTransactionsByCategories(
               categories: getIt<CategoriesBloc>().state.listUnsortedCategories,
               transactions: transactions);
 
-      var reverse = pairs.reversed;
-      pairs = reverse.toList();
+      // var reverse = pairs.reversed;
+      // pairs = reverse.toList();
 
       emit(state.copyWith(
         status: LastTransactionsStatus.success,
