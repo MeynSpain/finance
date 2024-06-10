@@ -61,6 +61,8 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
         timestamp: Timestamp.fromDate(event.dateTime),
       );
 
+      /* Не нужный функционал с добавлением транзакций при переводе
+
       CategoryModel? transferCategory = categoryService.getCategoryByType(
         Globals.typeCategoryTransfers,
         getIt<CategoriesBloc>().state.listCategories,
@@ -121,6 +123,8 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
           ));
         }
       }
+
+       */
 
       TransferModel transfer = await databaseService.addNewTransfer(
         userUid: event.userUid,

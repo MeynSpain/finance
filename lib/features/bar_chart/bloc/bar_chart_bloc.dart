@@ -6,6 +6,7 @@ import 'package:finance/core/constants/date_type.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/bar_chart_status.dart';
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/services/bar_chart_service.dart';
 import 'package:finance/core/services/database_service.dart';
@@ -26,6 +27,7 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
     on<BarChartInitialEvent>(_initial);
     on<BarChartGetTransactionsByDateEvent>(_getTransactionsByDate);
     on<BarChartShowLegendEvent>(_showLegend);
+    on<BarChartChangeAccountEvent>(_changeAccount);
   }
 
   Future<void> _initial(
@@ -85,6 +87,10 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
         mapIncome: mapIncome,
         showingBarGroups: showingBarGroups,
         dateType: DateType.weekDay,
+        startDate: start,
+        endDate: now,
+        accounts: event.accounts,
+        currentAccount: event.currentAccount,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -156,6 +162,8 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
         mapIncome: mapIncome,
         showingBarGroups: showingBarGroups,
         dateType: event.dateType,
+        startDate: event.startDate,
+        endDate: event.endDate,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -219,5 +227,79 @@ class BarChartBloc extends Bloc<BarChartEvent, BarChartState> {
       transactions: transactions ?? [],
       typeTransaction: typeTransaction,
     ));
+  }
+
+  Future<void> _changeAccount(
+      BarChartChangeAccountEvent event, Emitter<BarChartState> emit) async {
+    emit(state.copyWith(
+      status: BarChartStatus.loading,
+    ));
+
+    try {
+
+      List<TransactionModel> transactions =
+      await dataBaseService.getTransactions(
+        userUid: event.account.userUid!,
+        accountUid: event.account.uid!,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      );
+
+      Map<DateTime, List<TransactionModel>> transactionsMap = {};
+
+      switch (state.dateType) {
+        case DateType.weekDay:
+          transactionsMap = barChartService.getTransactionsByDay(transactions);
+        case DateType.month:
+          transactionsMap =
+              barChartService.getTransactionsByMonth(transactions);
+        case DateType.year:
+          transactionsMap = barChartService.getTransactionsByYear(transactions);
+      }
+
+      Map<DateTime, List<TransactionModel>> mapIncome = {};
+      Map<DateTime, List<TransactionModel>> mapExpense = {};
+
+      barChartService.splitIntoIncomeMapAndExpenseMap(
+          transactions: transactionsMap,
+          mapIncome: mapIncome,
+          mapExpense: mapExpense);
+
+      barChartService.addEmptyDateInMap(
+          transactionMap: mapExpense,
+          dateType: state.dateType,
+          startDate: state.startDate,
+          endDate: state.endDate);
+
+      barChartService.addEmptyDateInMap(
+          transactionMap: mapIncome,
+          dateType: state.dateType,
+          startDate: state.startDate,
+          endDate: state.endDate);
+
+      List<BarChartGroupData> showingBarGroups =
+      barChartService.getListGroupData(
+          mapIncome: mapIncome,
+          mapExpense: mapExpense,
+          dateType: state.dateType);
+
+      emit(state.copyWith(
+        status: BarChartStatus.success,
+        transactions: transactions,
+        transactionsMap: transactionsMap,
+        mapExpense: mapExpense,
+        mapIncome: mapIncome,
+        showingBarGroups: showingBarGroups,
+        dateType: state.dateType,
+        currentAccount: event.account,
+      ));
+
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: BarChartStatus.error,
+        errorMessage: 'Произошла ошибка во время смены счета',
+      ));
+    }
   }
 }

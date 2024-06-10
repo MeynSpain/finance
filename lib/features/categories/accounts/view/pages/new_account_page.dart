@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NewAccountPage extends StatefulWidget {
   const NewAccountPage({super.key});
@@ -35,6 +36,10 @@ class _NewAccountPageState extends State<NewAccountPage> {
       appBar: AppBar(
         title: Text('Новый счет'),
         centerTitle: true,
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(

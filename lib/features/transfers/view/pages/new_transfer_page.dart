@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NewTransferPage extends StatefulWidget {
   const NewTransferPage({super.key});
@@ -35,6 +36,10 @@ class _NewTransferPageState extends State<NewTransferPage> {
       appBar: AppBar(
         title: Text('Создание перевода'),
         centerTitle: true,
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(

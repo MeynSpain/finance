@@ -2,6 +2,7 @@ import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/bar_legend_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/category_model.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/bar_chart/legend/bloc/bar_legend_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
@@ -11,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LegendWidget extends StatelessWidget {
-  const LegendWidget({super.key});
+  LegendWidget({super.key});
+
+  final MoneyService moneyService = MoneyService();
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +71,14 @@ class LegendWidget extends StatelessWidget {
                         child: state.typeTransaction ==
                                 Globals.typeTransactionsExpense
                             ? Text(
-                                '-${state.showingMap[key]} руб.',
+                                '-${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: Colors.red,
                                   fontSize: 20,
                                 ),
                               )
                             : Text(
-                                '+${state.showingMap[key]} руб.',
+                                '+${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: Colors.green,
                                   fontSize: 20,

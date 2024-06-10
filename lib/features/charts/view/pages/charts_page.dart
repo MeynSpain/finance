@@ -1,16 +1,20 @@
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/charts_status.dart';
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/models/account_model.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/charts/bloc/charts_bloc.dart';
 import 'package:finance/features/charts/transaction_history/bloc/transaction_history_bloc.dart';
 import 'package:finance/features/charts/view/widgets/raw_buttons_date.dart';
 import 'package:finance/features/charts/view/widgets/text_date_widget.dart';
+import 'package:finance/features/transfers/view/dialogs/select_account_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -27,6 +31,8 @@ class _ChartsPageState extends State<ChartsPage> {
 
   bool isIncome = false;
 
+  final MoneyService moneyService = MoneyService();
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +43,51 @@ class _ChartsPageState extends State<ChartsPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Charts'),
+        centerTitle: true,
+        title: BlocBuilder<ChartsBloc, ChartsState>(
+          builder: (context, state) {
+            return TextButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => SelectAccountDialog(
+                          accounts: [
+                            ...state.accounts ?? [],
+                          ],
+                          selectedAccount: state.currentAccount,
+                          accept: (AccountModel? account) {
+                            print(account);
+                            if (account != null) {
+                              getIt<ChartsBloc>().add(ChartsChangeAccountEvent(
+                                account: account,
+                                type: isIncome
+                                    ? Globals.typeTransactionsIncome
+                                    : Globals.typeTransactionsExpense,
+                              ));
+                            }
+                          },
+                        ));
+              },
+              child: RichText(
+                text: TextSpan(style: theme.textTheme.bodyMedium, children: [
+                  TextSpan(
+                    text: state.currentAccount?.name ?? 'Выберите счет',
+                  ),
+                  WidgetSpan(
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      size: 14,
+                    ),
+                  )
+                ]),
+              ),
+            );
+          },
+        ),
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           BlocBuilder<ChartsBloc, ChartsState>(
             builder: (context, state) {
@@ -190,7 +240,14 @@ class _ChartsPageState extends State<ChartsPage> {
                         return SizedBox(
                           height: 200,
                           child: PieChart(
-                            centerWidget: Text('${state.totalValue}'),
+                            centerWidget: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('${moneyService.convert(state.totalValue, 100)}', style: theme.textTheme.bodyLarge,),
+                                // Text('руб.'),
+                                SvgPicture.asset('assets/icons/Rouble.svg'),
+                              ],
+                            ),
                             dataMap: state.status != ChartsStatus.dataMapEmpty
                                 ? state.dataMap
                                 : {'': 0},
@@ -300,7 +357,7 @@ class _ChartsPageState extends State<ChartsPage> {
                                                 // fit: FlexFit.loose,
                                                 child: Container(
                                                   child: Text(
-                                                    '${state.constDataMap[key]} руб.',
+                                                    '${moneyService.convert(state.constDataMap[key]!.toInt(), 100)} руб.',
                                                     style: theme
                                                         .textTheme.bodyMedium,
                                                   ),

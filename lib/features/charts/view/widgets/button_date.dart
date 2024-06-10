@@ -24,7 +24,8 @@ class _ButtonDateState extends State<ButtonDate> {
       child: Text(widget.text),
       style: TextButton.styleFrom(
         textStyle: theme.textTheme.bodyMedium,
-        foregroundColor: widget.isActive ? Colors.purple : Colors.black,
+        foregroundColor: widget.isActive ? Colors.white : Colors.black,
+        backgroundColor: widget.isActive ? Colors.black : Colors.grey[300],
       ),
     );
   }

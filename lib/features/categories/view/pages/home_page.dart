@@ -3,6 +3,7 @@ import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/services/database_service.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
@@ -26,6 +27,8 @@ class HomePage extends StatelessWidget {
   final List<DocumentReference> listCategories = [];
 
   final List<DocumentReference> listSubCategories = [];
+
+  final MoneyService moneyService = MoneyService();
 
   String _selected = '1';
 
@@ -87,7 +90,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${state.currentAccount?.balance}',
+                            '${moneyService.convert(state.currentAccount!.balance, 100)}',
                             style: theme.textTheme.headlineLarge,
                           ),
                           // SizedBox(
@@ -111,6 +114,8 @@ class HomePage extends StatelessWidget {
                                     .state
                                     .currentAccount!
                                     .uid!,
+                                accounts: state.listAccounts,
+                                currentAccount: state.currentAccount!,
                               ));
                               Navigator.of(context).pushNamed('/barChart');
                             },
@@ -120,6 +125,8 @@ class HomePage extends StatelessWidget {
                             onPressed: () {
                               getIt<ChartsBloc>().add(
                                   ChartsGetLastMonthTransactionsEvent(
+                                      accounts: state.listAccounts,
+                                      currentAccount: state.currentAccount!,
                                       userUid: FirebaseAuth
                                           .instance.currentUser!.uid,
                                       accountUid: state.currentAccount!.uid!));

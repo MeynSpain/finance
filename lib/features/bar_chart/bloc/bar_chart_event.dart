@@ -6,8 +6,15 @@ abstract class BarChartEvent {}
 class BarChartInitialEvent extends BarChartEvent {
   final String userUid;
   final String accountUid;
+  final List<AccountModel> accounts;
+  final AccountModel currentAccount;
 
-  BarChartInitialEvent({required this.userUid, required this.accountUid});
+  BarChartInitialEvent({
+    required this.userUid,
+    required this.accountUid,
+    required this.accounts,
+    required this.currentAccount,
+  });
 }
 
 class BarChartGetTransactionsByDateEvent extends BarChartEvent {
@@ -30,4 +37,10 @@ class BarChartShowLegendEvent extends BarChartEvent {
   final int rodIndex;
 
   BarChartShowLegendEvent({required this.groupIndex, required this.rodIndex});
+}
+
+class BarChartChangeAccountEvent extends BarChartEvent {
+  final AccountModel account;
+
+  BarChartChangeAccountEvent({required this.account});
 }

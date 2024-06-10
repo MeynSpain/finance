@@ -9,6 +9,7 @@ import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
 import 'package:finance/features/categories/tags/view/widgets/tags_widget.dart';
 import 'package:finance/features/categories/tags/view/widgets/new_tag_widget.dart';
+import 'package:finance/features/categories/view/widgets/create_new_category_widget.dart';
 import 'package:finance/features/categories/view/widgets/row_data_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -244,37 +245,56 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                             spacing: 20,
                             runSpacing: 20,
                             alignment: WrapAlignment.start,
-                            children: List.generate(
-                              state.listUnsortedCategories.length,
-                              (index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedIndex = index;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(
-                                          width: 2,
+                            children: [
+                              ...List.generate(
+                                state.listUnsortedCategories.length,
+                                (index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedIndex = index;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        border: Border.all(
+                                            width: 2,
+                                            color: _selectedIndex == index
+                                                ? Colors.black
+                                                : Colors.grey),
+                                      ),
+                                      child: Text(
+                                        '${state.listUnsortedCategories[index].name}',
+                                        style: TextStyle(
                                           color: _selectedIndex == index
                                               ? Colors.black
-                                              : Colors.grey),
-                                    ),
-                                    child: Text(
-                                      '${state.listUnsortedCategories[index].name}',
-                                      style: TextStyle(
-                                        color: _selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey,
+                                              : Colors.grey,
+                                        ),
                                       ),
                                     ),
+                                  );
+                                },
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _addCategory(context);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
+                                  child: Text('Добавить тег +'),
+                                ),
+                              ),
+                            ],
                           ),
                         );
                 },
@@ -388,6 +408,10 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
         isIncome: isIncome,
       ));
     }
+  }
+
+  void _addCategory(BuildContext context) {
+    showDialog(context: context, builder: (context) => CreateNewCategoryWidget());
   }
 
 // String selectedTag = 'one';

@@ -29,6 +29,7 @@ class _RowDataWidgetsState extends State<RowDataWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BlocBuilder<CategoriesBloc, CategoriesState>(
       builder: (context, state) {
         return SingleChildScrollView(

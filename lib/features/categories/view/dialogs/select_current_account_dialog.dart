@@ -1,6 +1,7 @@
 import 'package:finance/core/constants/widgets/list_item_container.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/account_model.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _SelectCurrentAccountDialogState
     extends State<SelectCurrentAccountDialog> {
   // bool _isChecked = false;
   int _selectedIndex = 0;
+  final MoneyService moneyService = MoneyService();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,8 @@ class _SelectCurrentAccountDialogState
                         AccountModel account = state.listAccounts[index];
                         return CheckboxListTile(
                             title: Text(account.name),
-                            subtitle: Text('${account.balance} руб.'),
+                            subtitle: Text(
+                                '${moneyService.convert(account.balance, 100)} руб.'),
                             activeColor: Colors.black,
                             checkColor: Colors.white,
                             value: _selectedIndex == index,

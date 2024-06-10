@@ -1,6 +1,9 @@
 part of 'charts_bloc.dart';
 
 class ChartsState extends Equatable {
+  final List<AccountModel>? accounts;
+  final AccountModel? currentAccount;
+
   final ChartsStatus status;
   final List<TransactionModel> listTransactions;
   final String errorMessage;
@@ -36,6 +39,8 @@ class ChartsState extends Equatable {
   final Map<String, Color> constColorMap;
 
   ChartsState._({
+    required this.accounts,
+    required this.currentAccount,
     required this.status,
     required this.listTransactions,
     required this.errorMessage,
@@ -62,6 +67,8 @@ class ChartsState extends Equatable {
 
   factory ChartsState.initial() {
     return ChartsState._(
+      accounts: [],
+      currentAccount: null,
       status: ChartsStatus.initial,
       listTransactions: [],
       errorMessage: '',
@@ -89,6 +96,8 @@ class ChartsState extends Equatable {
   }
 
   ChartsState copyWith({
+    List<AccountModel>? accounts,
+    AccountModel? currentAccount,
     ChartsStatus? status,
     List<TransactionModel>? listTransactions,
     String? errorMessage,
@@ -112,6 +121,8 @@ class ChartsState extends Equatable {
     bool? isByTags,
   }) {
     return ChartsState._(
+      accounts: accounts ?? this.accounts,
+      currentAccount: currentAccount ?? this.currentAccount,
       status: status ?? this.status,
       listTransactions: listTransactions ?? this.listTransactions,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -161,5 +172,7 @@ class ChartsState extends Equatable {
         startDate,
         endDate,
         isByTags,
+        accounts,
+        currentAccount,
       ];
 }

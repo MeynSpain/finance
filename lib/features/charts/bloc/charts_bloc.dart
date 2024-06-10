@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/constants/status/charts_status.dart';
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/models/pair_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
 import 'package:finance/core/services/charts_service.dart';
@@ -29,6 +30,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
     on<ChartsGetTransactionByDateEvent>(_getTransactionsByDate);
     on<ChartsChangeOnTagsEvent>(_changeOnTags);
     on<ChartsChangeOnCategoriesEvent>(_changeOnCategories);
+    on<ChartsChangeAccountEvent>(_changeAccount);
   }
 
   Future<void> _getLastMonthTransactions(
@@ -45,7 +47,7 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       List<TransactionModel> transactions =
           await databaseService.getTransactions(
               userUid: event.userUid,
-              accountUid: event.accountUid,
+              accountUid: event.currentAccount.uid!,
               endDate: endDateTime,
               startDate: startDateTime);
 
@@ -95,6 +97,8 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
 
       emit(state.copyWith(
         status: ChartsStatus.success,
+        accounts: event.accounts,
+        currentAccount: event.currentAccount,
         errorMessage: '',
         listTransactions: transactions,
 
@@ -561,6 +565,115 @@ class ChartsBloc extends Bloc<ChartsEvent, ChartsState> {
       emit(state.copyWith(
         status: ChartsStatus.error,
         errorMessage: 'Ошибка во смены графика на категорииa',
+      ));
+    }
+  }
+
+  Future<void> _changeAccount(
+      ChartsChangeAccountEvent event, Emitter<ChartsState> emit) async {
+    emit(state.copyWith(
+      status: ChartsStatus.loading,
+    ));
+
+    try {
+
+      List<TransactionModel> transactions =
+      await databaseService.getTransactions(
+          userUid: event.account.userUid!,
+          accountUid: event.account.uid!,
+          startDate: state.startDate,
+          endDate: state.endDate);
+
+      List<TransactionModel> listIncome = [];
+      List<TransactionModel> listExpense = [];
+
+      chartsService.divideTransactionsIntoIncomeAndExpense(
+          transactions: transactions,
+          listIncome: listIncome,
+          listExpense: listExpense);
+
+      // Доходы
+      Map<String, double> dataMapIncome =
+      chartsService.transactionsToMap(listIncome);
+
+      Map<String, double> constDataMapIncome =
+      Map<String, double>.from(dataMapIncome);
+
+      Map<String, bool> selectedIncome =
+      constDataMapIncome.map((key, value) => MapEntry(key, false));
+
+      int totalValueIncome =
+      chartsService.getTotalValueFromDataMap(dataMapIncome);
+
+      // Расходы
+      Map<String, double> dataMapExpense =
+      chartsService.transactionsToMap(listExpense);
+
+      Map<String, double> constDataMapExpense =
+      Map<String, double>.from(dataMapExpense);
+
+      Map<String, bool> selectedExpense =
+      constDataMapExpense.map((key, value) => MapEntry(key, false));
+
+      int totalValueExpense =
+      chartsService.getTotalValueFromDataMap(dataMapExpense);
+
+      // Цвета
+
+      List<Color> colors = [];
+      Map<String, Color> constColorsMap = {};
+      Map<String, Color> colorMap = {};
+
+      Map<String, double> dataMap = {};
+      Map<String, double> constDataMap = {};
+      Map<String, bool> selected = {};
+      int totalValue = 0;
+
+      // Смотрим какой тип графика изначально проссматривается ДОХОД ил РАСХОД
+      if (event.type == Globals.typeTransactionsExpense) {
+        dataMap = dataMapExpense;
+        constDataMap = constDataMapExpense;
+        totalValue = totalValueExpense;
+        selected = selectedExpense;
+      } else if (event.type == Globals.typeTransactionsIncome) {
+        dataMap = dataMapIncome;
+        constDataMap = constDataMapIncome;
+        totalValue = totalValueIncome;
+        selected = selectedIncome;
+      }
+
+      colors = chartsService.generateUniqueColors(dataMap.length);
+
+      constColorsMap = chartsService.getMapColor(constDataMap, colors);
+
+      colorMap = Map<String, Color>.from(constColorsMap);
+
+      emit(state.copyWith(
+        currentAccount: event.account,
+        status:
+        dataMap.isEmpty ? ChartsStatus.dataMapEmpty : ChartsStatus.success,
+        errorMessage: '',
+        listTransactions: transactions,
+        dataMapExpense: dataMapExpense,
+        constDataMapExpense: constDataMapExpense,
+        constDataMapIncome: constDataMapIncome,
+        dataMapIncome: dataMapIncome,
+        dataMap: dataMap,
+        constDataMap: constDataMap,
+        totalValue: totalValue,
+        selectedDataMap: selected,
+        constColorMap: constColorsMap,
+        colorMap: colorMap,
+        // startDate: event.startDate,
+        // endDate: event.endDate,
+        isByTags: false,
+      ));
+
+    } catch (e, st) {
+      getIt<Talker>().handle(e, st);
+      emit(state.copyWith(
+        status: ChartsStatus.error,
+        errorMessage: 'Ошибка во смены счета',
       ));
     }
   }

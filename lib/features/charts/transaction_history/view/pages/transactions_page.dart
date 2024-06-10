@@ -1,11 +1,15 @@
 import 'package:finance/core/constants/globals.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/charts/transaction_history/bloc/transaction_history_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
 class TransactionsPage extends StatelessWidget {
-  const TransactionsPage({super.key});
+  TransactionsPage({super.key});
+
+  final MoneyService moneyService = MoneyService();
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +17,12 @@ class TransactionsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Транзакции'),
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -61,8 +71,8 @@ class TransactionsPage extends StatelessWidget {
                                   Text(
                                     state.transactions[index].type ==
                                             Globals.typeTransactionsExpense
-                                        ? '-${state.transactions[index].amount} руб.'
-                                        : '+${state.transactions[index].amount} руб.',
+                                        ? '-${moneyService.convert(state.transactions[index].amount, 100)} руб.'
+                                        : '+${moneyService.convert(state.transactions[index].amount, 100)} руб.',
                                     style: theme.textTheme.bodyMedium!.copyWith(
                                       fontSize: 20,
                                       color: state.transactions[index].type ==

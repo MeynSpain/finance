@@ -6,9 +6,15 @@ abstract class ChartsEvent {}
 class ChartsGetLastMonthTransactionsEvent extends ChartsEvent {
   final String userUid;
   final String accountUid;
+  final List<AccountModel> accounts;
+  final AccountModel currentAccount;
 
-  ChartsGetLastMonthTransactionsEvent(
-      {required this.userUid, required this.accountUid});
+  ChartsGetLastMonthTransactionsEvent({
+    required this.userUid,
+    required this.accountUid,
+    required this.accounts,
+    required this.currentAccount,
+  });
 }
 
 class ChartsDeleteDataFromDataMapEvent extends ChartsEvent {
@@ -55,4 +61,14 @@ class ChartsChangeOnCategoriesEvent extends ChartsEvent {
   final String type;
 
   ChartsChangeOnCategoriesEvent({required this.type});
+}
+
+class ChartsChangeAccountEvent extends ChartsEvent {
+  final AccountModel account;
+  final String type;
+
+  ChartsChangeAccountEvent({
+    required this.account,
+    required this.type,
+  });
 }

@@ -4,6 +4,9 @@ class BarChartState extends Equatable {
   final BarChartStatus status;
   final String errorMessage;
 
+  final List<AccountModel> accounts;
+  AccountModel? currentAccount;
+
   final List<TransactionModel> transactions;
   final Map<DateTime, List<TransactionModel>> transactionsMap;
 
@@ -13,6 +16,9 @@ class BarChartState extends Equatable {
   final List<BarChartGroupData> showingBarGroups;
 
   final DateType dateType;
+
+  final DateTime startDate;
+  final DateTime endDate;
 
   // final List<String> titles;
   // final List<int> incomeList;
@@ -27,11 +33,17 @@ class BarChartState extends Equatable {
     required this.mapIncome,
     required this.mapExpense,
     required this.dateType,
+    required this.accounts,
+    required this.currentAccount,
+    required this.startDate,
+    required this.endDate,
   });
 
   factory BarChartState.initial() {
     return BarChartState._(
       status: BarChartStatus.initial,
+      accounts: [],
+      currentAccount: null,
       transactions: [],
       transactionsMap: {},
       errorMessage: '',
@@ -39,20 +51,28 @@ class BarChartState extends Equatable {
       mapIncome: {},
       mapExpense: {},
       dateType: DateType.weekDay,
+      startDate: DateTime.now(),
+      endDate: DateTime.now(),
     );
   }
 
   BarChartState copyWith({
     BarChartStatus? status,
     List<TransactionModel>? transactions,
+    List<AccountModel>? accounts,
+    AccountModel? currentAccount,
     Map<DateTime, List<TransactionModel>>? transactionsMap,
     String? errorMessage,
     List<BarChartGroupData>? showingBarGroups,
     Map<DateTime, List<TransactionModel>>? mapIncome,
     Map<DateTime, List<TransactionModel>>? mapExpense,
     DateType? dateType,
+    DateTime? startDate,
+    DateTime? endDate,
   }) {
     return BarChartState._(
+      accounts: accounts ?? this.accounts,
+      currentAccount: currentAccount ?? this.currentAccount,
       status: status ?? this.status,
       transactions: transactions ?? this.transactions,
       transactionsMap: transactionsMap ?? this.transactionsMap,
@@ -61,12 +81,16 @@ class BarChartState extends Equatable {
       mapIncome: mapIncome ?? this.mapIncome,
       mapExpense: mapExpense ?? this.mapExpense,
       dateType: dateType ?? this.dateType,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
   }
 
   @override
   List<Object?> get props => [
         status,
+        accounts,
+        currentAccount,
         transactions,
         transactionsMap,
         errorMessage,
@@ -74,5 +98,7 @@ class BarChartState extends Equatable {
         mapIncome,
         mapExpense,
         dateType,
+        startDate,
+        endDate,
       ];
 }

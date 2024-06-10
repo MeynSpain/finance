@@ -1,4 +1,5 @@
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/categories/accounts/view/widgets/list_accounts_widget.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/transfers/bloc/transfers_bloc.dart';
@@ -9,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AccountsPage extends StatelessWidget {
-  const AccountsPage({super.key});
+  AccountsPage({super.key});
+
+  final MoneyService moneyService = MoneyService();
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +21,10 @@ class AccountsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Счета'),
         centerTitle: true,
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/back_arrow.svg'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Column(
         // mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +41,7 @@ class AccountsPage extends StatelessWidget {
                       style: theme.textTheme.bodyLarge,
                     ),
                     Text(
-                      '${state.totalBalance} руб.',
+                      '${moneyService.convert(state.totalBalance, 100)} руб.',
                       style: theme.textTheme.bodyLarge,
                     ),
                   ],
@@ -43,47 +50,76 @@ class AccountsPage extends StatelessWidget {
             ),
           ),
 
+          const SizedBox(
+            height: 30,
+          ),
+
           /// Кнопки для истории и создания переводов по счетам
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(
-                onPressed: () {
-                  DateTime now = DateTime.now();
-                  DateTime startDate = DateTime(now.year, now.month, 1);
-                  getIt<TransfersBloc>().add(
-                    TransfersGetAllTransfersByDateEvent(
-                      userUid: FirebaseAuth.instance.currentUser!.uid,
-                      startDate: startDate,
-                      endDate: now,
-                    ),
-                  );
-                  Navigator.of(context).pushNamed('/accounts/history');
-                },
-                icon: Image.asset('assets/icons/history.png'),
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      DateTime now = DateTime.now();
+                      DateTime startDate = DateTime(now.year, now.month, 1);
+                      getIt<TransfersBloc>().add(
+                        TransfersGetAllTransfersByDateEvent(
+                          userUid: FirebaseAuth.instance.currentUser!.uid,
+                          startDate: startDate,
+                          endDate: now,
+                        ),
+                      );
+                      Navigator.of(context).pushNamed('/accounts/history');
+                    },
+                    icon: Image.asset('assets/icons/history.png'),
+                  ),
+                  Text('История переводов')
+                ],
               ),
-              IconButton(
-                onPressed: () {
-                  getIt<TransfersBloc>().add(TransferGetAccountsFromStateEvent());
-                  Navigator.of(context).pushNamed('/accounts/newTransfer');
-                },
-                icon: Image.asset('assets/icons/new_transfer.png'),
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      getIt<TransfersBloc>()
+                          .add(TransferGetAccountsFromStateEvent());
+                      Navigator.of(context).pushNamed('/accounts/newTransfer');
+                    },
+                    icon: Image.asset('assets/icons/new_transfer.png'),
+                  ),
+                  Text('Создать перевод')
+                ],
               ),
             ],
           ),
 
+          SizedBox(
+            height: 30,
+          ),
+
           /// Список счетов
-          const Expanded(child: ListAccountsWidgets()),
+          Expanded(child: ListAccountsWidgets()),
 
           /// Кнопка добавления
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Center(
               child: FloatingActionButton(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Colors.black,
+                      width: 1.7,
+                    ),
+                    borderRadius: BorderRadius.circular(15)),
                 onPressed: () {
                   Navigator.of(context).pushNamed('/accounts/newAccount');
                 },
-                child: Icon(Icons.add),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
               ),
             ),
           )
