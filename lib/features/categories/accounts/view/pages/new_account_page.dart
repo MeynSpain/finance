@@ -1,5 +1,7 @@
 import 'package:finance/core/constants/globals.dart';
 import 'package:finance/core/injection.dart';
+import 'package:finance/core/services/money_service.dart';
+import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class NewAccountPage extends StatefulWidget {
   const NewAccountPage({super.key});
@@ -19,14 +22,62 @@ class _NewAccountPageState extends State<NewAccountPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _balanceController = TextEditingController();
 
+  final MoneyService moneyService = MoneyService();
+
   bool _isNullable = false;
   bool _isAccountedInTotalBalance = true;
 
   @override
+  void initState() {
+    _balanceController.addListener(_formatSummaInput);
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    _balanceController.removeListener(_formatSummaInput);
     _nameController.dispose();
     _balanceController.dispose();
     super.dispose();
+  }
+
+  void _formatSummaInput() {
+    String input = _balanceController.text.replaceAll(' ', '');
+
+    // Check if there is more than one comma and truncate if necessary
+    if (input.split(',').length > 2) {
+      input = input.replaceFirst(RegExp(r',(?=.*,)'), '');
+    }
+
+    int decimalIndex = input.indexOf(',');
+    final String intPart =
+        decimalIndex == -1 ? input : input.substring(0, decimalIndex);
+    final String decimalPart =
+        decimalIndex == -1 ? '' : input.substring(decimalIndex + 1);
+
+    final intPartWithoutLeadingZeros =
+        intPart.replaceFirst(RegExp(r'^0+(?!$)'), '');
+
+    // Limit the decimal part to two digits
+    final String limitedDecimalPart =
+        decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
+
+    final String formattedIntPart = NumberFormat('#,###', 'en_US')
+        .format(int.tryParse(intPartWithoutLeadingZeros) ?? 0)
+        .replaceAll(',', ' ');
+
+    // Combine the formatted integer part with the limited decimal part
+    final String formattedInput = decimalIndex == -1
+        ? formattedIntPart
+        : '$formattedIntPart,$limitedDecimalPart';
+
+    // Update the controller's text if the formatted input is different from the original input
+    if (formattedInput != _balanceController.text) {
+      _balanceController.value = _balanceController.value.copyWith(
+        text: formattedInput,
+        selection: TextSelection.collapsed(offset: formattedInput.length),
+      );
+    }
   }
 
   @override
@@ -70,9 +121,10 @@ class _NewAccountPageState extends State<NewAccountPage> {
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               child: TextField(
                 controller: _balanceController,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d,]')),
+                  // FilteringTextInputFormatter.digitsOnly,
                 ],
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -124,7 +176,8 @@ class _NewAccountPageState extends State<NewAccountPage> {
                   value: _isAccountedInTotalBalance,
                   onChanged: (bool? newValue) {
                     setState(() {
-                      _isAccountedInTotalBalance = newValue ?? _isAccountedInTotalBalance;
+                      _isAccountedInTotalBalance =
+                          newValue ?? _isAccountedInTotalBalance;
                     });
                   },
                 ),
@@ -149,8 +202,8 @@ class _NewAccountPageState extends State<NewAccountPage> {
                           )),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 10)),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10)),
                     ),
                   ),
                 ),
@@ -167,10 +220,11 @@ class _NewAccountPageState extends State<NewAccountPage> {
     String balance = _balanceController.text.trim();
 
     if (name != '' && balance != '') {
+      int summa = moneyService.convertToKopecks(balance);
       getIt<CategoriesBloc>().add(CategoriesAddNewAccountEvent(
         userUid: FirebaseAuth.instance.currentUser!.uid!,
         name: name,
-        balance: int.parse(balance),
+        balance: summa,
         isAccountedInTotalBalance: _isAccountedInTotalBalance,
         type: _isNullable
             ? Globals.typeAccountNullable

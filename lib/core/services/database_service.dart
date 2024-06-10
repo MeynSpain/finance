@@ -56,7 +56,7 @@ class DatabaseService {
       if (query.docs.isNotEmpty) {
         // Берется эта родительская категория и в ней создается новая подколлекция "Категории"
         DocumentReference documentReference =
-            query.docs.first.reference.collection(Globals.categories).doc();
+        query.docs.first.reference.collection(Globals.categories).doc();
 
         categoryModel.uid = documentReference.id;
 
@@ -107,6 +107,22 @@ class DatabaseService {
 
     await docRef.set(transfer.toMap());
 
+    int amount = transferModel.amount!;
+
+    amount = amount * (-1);
+
+    db.collection(Globals.users).doc(userUid).collection(Globals.accounts).doc(
+        transferModel.fromAccountUid).update({
+      Globals.balance: FieldValue.increment(amount),
+    });
+
+    amount = amount * (-1);
+
+    db.collection(Globals.users).doc(userUid).collection(Globals.accounts).doc(
+        transferModel.toAccountUid).update({
+      Globals.balance: FieldValue.increment(amount),
+    });
+
     return transfer;
   }
 
@@ -126,7 +142,7 @@ class DatabaseService {
         // Теперь ищем в списке родительскую категорию и добавляем ей в список
         // childrenCategory
         CategoryModel category = sortedListCategories.firstWhere((element) =>
-            element.uid == sortedListCategories[i].parentCategoryUid);
+        element.uid == sortedListCategories[i].parentCategoryUid);
         category.childrenCategory.add(sortedListCategories[i]);
       }
     }
@@ -194,7 +210,7 @@ class DatabaseService {
   Future<AccountModel> addStartAccountTemplate(
       {required String userUid}) async {
     AccountModel startTemplate =
-        Templates.getStartAccountTemplate(userUid: userUid);
+    Templates.getStartAccountTemplate(userUid: userUid);
 
     DocumentReference docRef = db
         .collection(Globals.users)
@@ -213,7 +229,7 @@ class DatabaseService {
   Future<List<CategoryModel>> addStartCategoryTemplate(
       {required String userUid}) async {
     List<CategoryModel> startTemplate =
-        Templates.getStartCategoryTemplate(userUid: userUid);
+    Templates.getStartCategoryTemplate(userUid: userUid);
 
     CollectionReference collectionCategoryRef = db
         .collection(Globals.users)
@@ -229,8 +245,8 @@ class DatabaseService {
     return startTemplate;
   }
 
-  Future<void> updateBalance(
-      CategoryModel categoryModel, int newBalance) async {
+  Future<void> updateBalance(CategoryModel categoryModel,
+      int newBalance) async {
     QuerySnapshot querySnapshot = await db
         .collectionGroup(Globals.categories)
         .where(Globals.uid, isEqualTo: categoryModel.uid)
@@ -350,11 +366,10 @@ class DatabaseService {
     return transactionModel;
   }
 
-  Future<List<TransactionModel>> getTransactions(
-      {required String userUid,
-      required String accountUid,
-      required DateTime startDate,
-      required DateTime endDate}) async {
+  Future<List<TransactionModel>> getTransactions({required String userUid,
+    required String accountUid,
+    required DateTime startDate,
+    required DateTime endDate}) async {
     List<TransactionModel> listTransactions = [];
 
     CollectionReference transactionCollectionReference = db
@@ -366,13 +381,13 @@ class DatabaseService {
 
     QuerySnapshot querySnapshot = await transactionCollectionReference
         .where(Globals.timestamp,
-            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+        isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where(Globals.timestamp,
-            isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        isLessThanOrEqualTo: Timestamp.fromDate(endDate))
         .orderBy(
-          Globals.timestamp,
-          descending: true,
-        )
+      Globals.timestamp,
+      descending: true,
+    )
         .get();
     // QuerySnapshot querySnapshot = await transactionCollectionReference.get();
 
@@ -424,9 +439,9 @@ class DatabaseService {
         .doc(userUid)
         .collection(Globals.transfers)
         .where(Globals.timestamp,
-            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+        isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where(Globals.timestamp,
-            isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        isLessThanOrEqualTo: Timestamp.fromDate(endDate))
         .orderBy(Globals.timestamp, descending: true)
         .get();
 

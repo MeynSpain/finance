@@ -4,6 +4,7 @@ import 'package:finance/core/constants/status/categories_status.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/tag_model.dart';
 import 'package:finance/core/models/transaction_model.dart';
+import 'package:finance/core/services/money_service.dart';
 import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
 import 'package:finance/features/categories/tags/bloc/tags_bloc.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class NewTransactionPage extends StatefulWidget {
@@ -33,6 +35,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
   final TextEditingController _descriptionTextInputController =
       TextEditingController();
 
+  final MoneyService moneyService = MoneyService();
+
   // List<TagModel> selectedTags = [];
   // List<TagModel> tags = [];
   // TagModel? selectedTag;
@@ -43,31 +47,58 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   bool isIncome = false;
 
-  // late List<bool> _selectedTags;
-
   @override
   void initState() {
-    // List<TagModel>? tagsFromState = getIt<CategoriesBloc>().state.listTags;
-
-    // if (tagsFromState != null && tagsFromState.isNotEmpty) {
-    //   for (TagModel tag in tagsFromState) {
-    //     tags.add(tag);
-    //   }
-    //   selectedTag = tags.first;
-    // }
-
-    // _selectedTags = List<bool>.filled(
-    //     getIt<CategoriesBloc>().state.listTags!.length, false);
-    // print('_selected tags: $_selectedTags');
-
+    _summaTextInputController.addListener(_formatSummaInput);
     super.initState();
   }
 
   @override
   void dispose() {
+    _summaTextInputController.removeListener(_formatSummaInput);
     _summaTextInputController.dispose();
     _descriptionTextInputController.dispose();
     super.dispose();
+  }
+
+  void _formatSummaInput() {
+    String input = _summaTextInputController.text.replaceAll(' ', '');
+
+    // Check if there is more than one comma and truncate if necessary
+    if (input.split(',').length > 2) {
+      input = input.replaceFirst(RegExp(r',(?=.*,)'), '');
+    }
+
+    int decimalIndex = input.indexOf(',');
+    final String intPart =
+        decimalIndex == -1 ? input : input.substring(0, decimalIndex);
+    final String decimalPart =
+        decimalIndex == -1 ? '' : input.substring(decimalIndex + 1);
+
+    final intPartWithoutLeadingZeros =
+        intPart.replaceFirst(RegExp(r'^0+(?!$)'), '');
+
+    // Limit the decimal part to two digits
+    final String limitedDecimalPart =
+        decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
+
+    final String formattedIntPart = NumberFormat('#,###', 'en_US')
+        .format(int.tryParse(intPartWithoutLeadingZeros) ?? 0)
+        .replaceAll(',', ' ');
+
+    // Combine the formatted integer part with the limited decimal part
+    final String formattedInput = decimalIndex == -1
+        ? formattedIntPart
+        : '$formattedIntPart,$limitedDecimalPart';
+
+    // Update the controller's text if the formatted input is different from the original input
+    if (formattedInput != _summaTextInputController.text) {
+      _summaTextInputController.value =
+          _summaTextInputController.value.copyWith(
+        text: formattedInput,
+        selection: TextSelection.collapsed(offset: formattedInput.length),
+      );
+    }
   }
 
   @override
@@ -291,7 +322,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                                       color: Colors.black,
                                     ),
                                   ),
-                                  child: Text('Добавить тег +'),
+                                  child: Text('Добавить категорию +'),
                                 ),
                               ),
                             ],
@@ -314,9 +345,10 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                 child: TextField(
                   controller: _summaTextInputController,
                   // expands: false,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,]')),
+                    // FilteringTextInputFormatter.digitsOnly,
                   ],
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
@@ -383,35 +415,41 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
         Timestamp.fromDate(getIt<CategoriesBloc>().state.selectedDate);
 
     if (summa != '') {
-      TransactionModel transactionModel = TransactionModel(
-        amount: int.parse(summa),
-        description: description,
-        tags: tags,
-        timestamp: date,
-        userUid: FirebaseAuth.instance.currentUser!.uid,
-        type: !isIncome
-            ? Globals.typeTransactionsExpense
-            : Globals.typeTransactionsIncome,
-        categoryUid: getIt<CategoriesBloc>()
-            .state
-            .listUnsortedCategories[_selectedIndex]
-            .uid,
-        accountUid: getIt<CategoriesBloc>()
-            .state
-            .listAccounts[_selectedAccountIndex]
-            .uid,
-      );
+      int sum = moneyService.convertToKopecks(summa);
+      if (sum != 0) {
+        TransactionModel transactionModel = TransactionModel(
+          amount: sum,
+          description: description,
+          tags: tags,
+          timestamp: date,
+          userUid: FirebaseAuth.instance.currentUser!.uid,
+          type: !isIncome
+              ? Globals.typeTransactionsExpense
+              : Globals.typeTransactionsIncome,
+          categoryUid: getIt<CategoriesBloc>()
+              .state
+              .listUnsortedCategories[_selectedIndex]
+              .uid,
+          accountUid: getIt<CategoriesBloc>()
+              .state
+              .listAccounts[_selectedAccountIndex]
+              .uid,
+        );
 
-      getIt<CategoriesBloc>().add(CategoriesAddTransactionEvent(
-        userUid: FirebaseAuth.instance.currentUser!.uid,
-        transactionModel: transactionModel,
-        isIncome: isIncome,
-      ));
+        getIt<CategoriesBloc>().add(CategoriesAddTransactionEvent(
+          userUid: FirebaseAuth.instance.currentUser!.uid,
+          transactionModel: transactionModel,
+          isIncome: isIncome,
+        ));
+      } else {
+        SnackBarService.showSnackBar(context, 'Сумма транзакции не может быть равно 0', true);
+      }
     }
   }
 
   void _addCategory(BuildContext context) {
-    showDialog(context: context, builder: (context) => CreateNewCategoryWidget());
+    showDialog(
+        context: context, builder: (context) => CreateNewCategoryWidget());
   }
 
 // String selectedTag = 'one';
