@@ -187,11 +187,15 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
   FutureOr<void> _selectFromAccount(
       TransfersSelectFromAccountEvent event, Emitter<TransfersState> emit) {
     try {
-      state.notSelectedAccounts.remove(event.fromAccount);
+      // state.notSelectedAccounts.remove(event.fromAccount);
+
+      List<AccountModel> notSelected = List.from(state.accounts);
+      notSelected.remove(event.fromAccount);
+      notSelected.remove(state.toAccount);
 
       emit(state.copyWith(
         fromAccount: event.fromAccount,
-        notSelectedAccounts: state.notSelectedAccounts,
+        notSelectedAccounts: notSelected,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
@@ -206,11 +210,15 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
   FutureOr<void> _selectToAccount(
       TransfersSelectToAccountEvent event, Emitter<TransfersState> emit) {
     try {
-      state.notSelectedAccounts.remove(event.toAccount);
+      // state.notSelectedAccounts.remove(event.toAccount);
+
+      List<AccountModel> notSelected = List.from(state.accounts);
+      notSelected.remove(event.toAccount);
+      notSelected.remove(state.fromAccount);
 
       emit(state.copyWith(
         toAccount: event.toAccount,
-        notSelectedAccounts: state.notSelectedAccounts,
+        notSelectedAccounts: notSelected,
       ));
     } catch (e, st) {
       getIt<Talker>().handle(e, st);
