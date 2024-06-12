@@ -3,6 +3,7 @@ import 'package:finance/core/models/account_model.dart';
 import 'package:finance/core/services/money_service.dart';
 import 'package:finance/core/services/snack_bar_service.dart';
 import 'package:finance/features/categories/bloc/categories_bloc.dart';
+import 'package:finance/features/categories/view/widgets/data_widget.dart';
 import 'package:finance/features/transfers/bloc/transfers_bloc.dart';
 import 'package:finance/features/transfers/view/dialogs/select_account_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,6 +34,8 @@ class _NewTransferPageState extends State<NewTransferPage> {
   List<String> list = ['1', '2'];
   String _sel = '1';
 
+  DateTime _selectedDate = DateTime.now();
+
   @override
   void initState() {
     _amountTextController.addListener(_formatSummaInput);
@@ -51,24 +54,22 @@ class _NewTransferPageState extends State<NewTransferPage> {
     String input = _amountTextController.text.replaceAll(' ', '');
 
     // Check if there is more than one comma and truncate if necessary
-    if (input
-        .split(',')
-        .length > 2) {
+    if (input.split(',').length > 2) {
       input = input.replaceFirst(RegExp(r',(?=.*,)'), '');
     }
 
     int decimalIndex = input.indexOf(',');
     final String intPart =
-    decimalIndex == -1 ? input : input.substring(0, decimalIndex);
+        decimalIndex == -1 ? input : input.substring(0, decimalIndex);
     final String decimalPart =
-    decimalIndex == -1 ? '' : input.substring(decimalIndex + 1);
+        decimalIndex == -1 ? '' : input.substring(decimalIndex + 1);
 
     final intPartWithoutLeadingZeros =
-    intPart.replaceFirst(RegExp(r'^0+(?!$)'), '');
+        intPart.replaceFirst(RegExp(r'^0+(?!$)'), '');
 
     // Limit the decimal part to two digits
     final String limitedDecimalPart =
-    decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
+        decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
 
     final String formattedIntPart = NumberFormat('#,###', 'en_US')
         .format(int.tryParse(intPartWithoutLeadingZeros) ?? 0)
@@ -103,7 +104,10 @@ class _NewTransferPageState extends State<NewTransferPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text('Перевод со счета'),
+            Text(
+              'Перевод со счета',
+              style: theme.textTheme.bodyLarge,
+            ),
             BlocBuilder<TransfersBloc, TransfersState>(
               builder: (context, state) {
                 return Row(
@@ -113,8 +117,7 @@ class _NewTransferPageState extends State<NewTransferPage> {
                       onPressed: () {
                         showDialog(
                             context: context,
-                            builder: (context) =>
-                                SelectAccountDialog(
+                            builder: (context) => SelectAccountDialog(
                                   accounts: [
                                     ...state.notSelectedAccounts,
                                     if (state.fromAccount != null)
@@ -132,23 +135,30 @@ class _NewTransferPageState extends State<NewTransferPage> {
                                 ));
                       },
                       child: RichText(
-                        text: TextSpan(style: theme.textTheme.bodyLarge, children: [
-                          TextSpan(
-                            text: state.fromAccount?.name ?? 'Выберите счет',
-                          ),
-                          WidgetSpan(child: Icon(Icons.arrow_drop_down))
-                        ]),
+                        text: TextSpan(
+                            style: theme.textTheme.bodyLarge,
+                            children: [
+                              TextSpan(
+                                text:
+                                    state.fromAccount?.name ?? 'Выберите счет',
+                              ),
+                              WidgetSpan(child: Icon(Icons.arrow_drop_down))
+                            ]),
                       ),
                     ),
                     state.fromAccount != null
-                        ? Text('${moneyService.convert(
-                        state.fromAccount!.balance, 100)} руб.')
+                        ? Text(
+                            '${moneyService.convert(state.fromAccount!.balance, 100)} руб.')
                         : SizedBox()
                   ],
                 );
               },
             ),
-            Text('Перевод на счет'),
+            Divider(),
+            Text(
+              'Перевод на счет',
+              style: theme.textTheme.bodyLarge,
+            ),
             BlocBuilder<TransfersBloc, TransfersState>(
               builder: (context, state) {
                 return Row(
@@ -158,12 +168,11 @@ class _NewTransferPageState extends State<NewTransferPage> {
                       onPressed: () {
                         showDialog(
                             context: context,
-                            builder: (context) =>
-                                SelectAccountDialog(
+                            builder: (context) => SelectAccountDialog(
                                   accounts: [
                                     ...state.notSelectedAccounts,
-                                    if (state.toAccount != null) state
-                                        .toAccount!
+                                    if (state.toAccount != null)
+                                      state.toAccount!
                                   ],
                                   selectedAccount: state.toAccount,
                                   accept: (AccountModel? account) {
@@ -177,7 +186,8 @@ class _NewTransferPageState extends State<NewTransferPage> {
                                 ));
                       },
                       child: RichText(
-                        text: TextSpan(style: theme.textTheme.bodyLarge,
+                        text: TextSpan(
+                            style: theme.textTheme.bodyLarge,
                             children: [
                               TextSpan(
                                 text: state.toAccount?.name ?? 'Выберите счет',
@@ -187,14 +197,18 @@ class _NewTransferPageState extends State<NewTransferPage> {
                       ),
                     ),
                     state.toAccount != null
-                        ? Text('${moneyService.convert(
-                        state.toAccount!.balance, 100)} руб.')
+                        ? Text(
+                            '${moneyService.convert(state.toAccount!.balance, 100)} руб.')
                         : SizedBox()
                   ],
                 );
               },
             ),
-            Text('Сумма перевода'),
+            Divider(),
+            Text(
+              'Сумма перевода',
+              style: theme.textTheme.bodyLarge,
+            ),
             TextField(
               controller: _amountTextController,
               // expands: false,
@@ -210,9 +224,55 @@ class _NewTransferPageState extends State<NewTransferPage> {
                 hintText: 'Сумма',
               ),
             ),
-            Text('Дата'),
-            Text('Сегодня'),
-            Text('Комментарий'),
+            Divider(),
+
+            // Text('Сегодня'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Дата',
+                  style: theme.textTheme.bodyLarge,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    DateTime? dateTime = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(3000),
+                      initialDate: _selectedDate,
+                    );
+
+                    if (dateTime != null) {
+                      setState(() {
+                        _selectedDate = dateTime;
+                      });
+                    }
+                  },
+                  child: DataWidget(
+                    isSelected: true,
+                    date:
+                        '${_selectedDate.day}.${_selectedDate.month}.${_selectedDate.year}',
+                    dayName: 'Выбранная',
+                    childrenWidgets: [
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(
+                        Icons.date_range_rounded,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Divider(),
+            Text(
+              'Комментарий',
+              style: theme.textTheme.bodyLarge,
+            ),
             TextField(
               controller: _descriptionTextController,
               // expands: false,
@@ -223,7 +283,17 @@ class _NewTransferPageState extends State<NewTransferPage> {
                 hintText: 'Описание',
               ),
             ),
+            SizedBox(height: 20,),
             ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  textStyle: theme.textTheme.bodyMedium,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 100,
+                  ),
+                ),
                 onPressed: () {
                   String amount = _amountTextController.text.trim();
                   String description = _descriptionTextController.text.trim();
@@ -250,7 +320,7 @@ class _NewTransferPageState extends State<NewTransferPage> {
                             toAccount: toAccount,
                             amount: summa,
                             description: description,
-                            dateTime: DateTime.now(),
+                            dateTime: _selectedDate,
                           ),
                         );
                         Navigator.of(context).pop();

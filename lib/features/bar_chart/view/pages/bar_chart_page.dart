@@ -3,6 +3,7 @@ import 'package:finance/core/constants/status/bar_chart_status.dart';
 import 'package:finance/core/constants/template/templates.dart';
 import 'package:finance/core/injection.dart';
 import 'package:finance/core/models/account_model.dart';
+import 'package:finance/core/services/bar_chart_service.dart';
 import 'package:finance/core/services/money_service.dart';
 import 'package:finance/features/bar_chart/bloc/bar_chart_bloc.dart';
 import 'package:finance/features/bar_chart/legend/view/widgets/legend_widget.dart';
@@ -23,8 +24,9 @@ class BarChartPage extends StatefulWidget {
 }
 
 class _BarChartPageState extends State<BarChartPage> {
-
   final MoneyService moneyService = MoneyService();
+  final BarChartService barChartService = BarChartService();
+  double _value = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -39,19 +41,20 @@ class _BarChartPageState extends State<BarChartPage> {
                 showDialog(
                     context: context,
                     builder: (context) => SelectAccountDialog(
-                      accounts: [
-                        ...state.accounts ?? [],
-                      ],
-                      selectedAccount: state.currentAccount,
-                      accept: (AccountModel? account) {
-                        print(account);
-                        if (account != null) {
-                          getIt<BarChartBloc>().add(BarChartChangeAccountEvent(
-                            account: account,
-                          ));
-                        }
-                      },
-                    ));
+                          accounts: [
+                            ...state.accounts ?? [],
+                          ],
+                          selectedAccount: state.currentAccount,
+                          accept: (AccountModel? account) {
+                            print(account);
+                            if (account != null) {
+                              getIt<BarChartBloc>()
+                                  .add(BarChartChangeAccountEvent(
+                                account: account,
+                              ));
+                            }
+                          },
+                        ));
               },
               child: RichText(
                 text: TextSpan(style: theme.textTheme.bodyMedium, children: [
@@ -91,16 +94,16 @@ class _BarChartPageState extends State<BarChartPage> {
                       : BarChart(
                           BarChartData(
                               titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
+                                  leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(
                                     showTitles: true,
                                     // interval: 10000,
                                     getTitlesWidget: (value, meta) {
-                                      return Text('${moneyService.convert(value.toInt(), 100)} ');
+                                      return Text(
+                                          '${moneyService.convert(value.toInt(), 100)} ');
                                     },
-                                    reservedSize: 50
-                                  )
-                                ),
+                                    reservedSize: 100,
+                                  )),
                                   show: true,
                                   rightTitles: const AxisTitles(
                                       sideTitles: SideTitles(
@@ -118,10 +121,28 @@ class _BarChartPageState extends State<BarChartPage> {
                                   ))),
                               barGroups: state.showingBarGroups,
                               barTouchData: BarTouchData(
-                                touchCallback: (event, response) {
+                                touchTooltipData: BarTouchTooltipData(
+                                    getTooltipItem: (BarChartGroupData group,
+                                        int groupIndex,
+                                        BarChartRodData rod,
+                                        int rodIndex) {
+                                  final color =
+                                      rod.gradient?.colors.first ?? rod.color;
+                                  final textStyle = TextStyle(
+                                    color: color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  );
 
+                                  return BarTooltipItem(
+                                      moneyService.convert(
+                                          rod.toY.toInt(), 100),
+                                      textStyle);
+                                }),
+                                touchCallback: (event, response) {
                                   if (event is FlPanDownEvent) {
-                                    if (response?.spot?.touchedBarGroup != null) {
+                                    if (response?.spot?.touchedBarGroup !=
+                                        null) {
                                       getIt<BarChartBloc>().add(
                                           BarChartShowLegendEvent(
                                               groupIndex: response!

@@ -197,4 +197,17 @@ class BarChartService {
 
     return resultList;
   }
+
+  double getMarkWidth(double value) {
+    // int n = 0;
+    // double eps = 0.01;
+    // while (value <= eps) {
+    //   value = value / 10;
+    //   n++;
+    // }
+    // double size = n * 10;
+    String str = value.toString();
+    double size = str.length * 10;
+    return size;
+  }
 }
