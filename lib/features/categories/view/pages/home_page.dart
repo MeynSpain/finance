@@ -74,7 +74,9 @@ class HomePage extends StatelessWidget {
                               showDialog(
                                   context: context,
                                   builder: (context) =>
-                                      SelectCurrentAccountDialog());
+                                      SelectCurrentAccountDialog(
+
+                                      ));
                             },
                             child: RichText(
                               text: TextSpan(

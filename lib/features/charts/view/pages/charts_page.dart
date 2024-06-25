@@ -347,20 +347,23 @@ class _ChartsPageState extends State<ChartsPage> {
                                                   '$key',
                                                   style: theme
                                                       .textTheme.bodyMedium,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  // overflow:TextOverflow.ellipsis,
                                                 )),
                                               ),
                                               Flexible(
                                                 fit: FlexFit.loose,
                                                 flex: 2,
                                                 // fit: FlexFit.loose,
-                                                child: Container(
-                                                  child: Text(
-                                                    '${moneyService.convert(state.constDataMap[key]!.toInt(), 100)} руб.',
-                                                    style: theme
-                                                        .textTheme.bodyMedium,
+                                                child: Align(
+                                                  child: Container(
+                                                    child: Text(
+                                                      '${moneyService.convert(state.constDataMap[key]!.toInt(), 100)} руб.',
+                                                      style: theme
+                                                          .textTheme.bodyMedium,
+                                                      textAlign: TextAlign.right,
+                                                    ),
                                                   ),
+                                                  alignment: Alignment.centerRight,
                                                 ),
                                               )
                                             ],

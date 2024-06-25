@@ -47,7 +47,7 @@ class LastTransactionsWidget extends StatelessWidget {
                                   style: theme.textTheme.bodyLarge!.copyWith(
                                     fontSize: 20,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
+                                  // overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               flex: 6,
@@ -56,17 +56,26 @@ class LastTransactionsWidget extends StatelessWidget {
                               child: SizedBox(),
                               flex: 1,
                             ),
-                            Text(
-                              state.transactions[index].second.type ==
-                                      Globals.typeTransactionsExpense
-                                  ? '-${moneyService.convert(state.transactions[index].second.amount, 100)} руб.'
-                                  : '+${moneyService.convert(state.transactions[index].second.amount, 100)} руб.',
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                fontSize: 20,
-                                color: state.transactions[index].second.type ==
-                                        Globals.typeTransactionsExpense
-                                    ? Colors.redAccent
-                                    : Colors.green,
+                            Expanded(
+                              flex: 6,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  state.transactions[index].second.type ==
+                                          Globals.typeTransactionsExpense
+                                      // ? 'asssssssssssssssssssssssssssssssssssssssssssssssssss'
+                                      ? '-${moneyService.convert(state.transactions[index].second.amount, 100)} руб.'
+                                      : '+${moneyService.convert(state.transactions[index].second.amount, 100)} руб.',
+                                  textAlign: TextAlign.right,
+                                  style: theme.textTheme.bodyMedium!.copyWith(
+                                    fontSize: 20,
+                                    // overflow: TextOverflow.ellipsis,
+                                    color: state.transactions[index].second.type ==
+                                            Globals.typeTransactionsExpense
+                                        ? Colors.redAccent
+                                        : Colors.green,
+                                  ),
+                                ),
                               ),
                             ),
                           ],

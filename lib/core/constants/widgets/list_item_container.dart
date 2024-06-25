@@ -37,6 +37,7 @@ class ListItemContainer extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
+              // 'sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss',
               leftText,
               overflow: textOverflow ?? TextOverflow.ellipsis,
               style: leftTextStyle ??
@@ -45,14 +46,19 @@ class ListItemContainer extends StatelessWidget {
                   ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text(
-              rightText,
-              style: rightTextStyle ??
-                  theme.textTheme.bodyLarge?.copyWith(
-                    fontSize: 20,
-                  ),
+          Expanded(
+            // padding: const EdgeInsets.only(left: 10),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                // '1111111111111111111111111111111111111111111111111111111111111111111111111111',
+                rightText,
+                textAlign: TextAlign.right,
+                style: rightTextStyle ??
+                    theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 20,
+                    ),
+              ),
             ),
           ),
         ],

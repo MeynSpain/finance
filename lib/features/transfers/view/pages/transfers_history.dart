@@ -57,21 +57,32 @@ class TransfersHistory extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        '${transfer.dateTime.hour}:${transfer.dateTime.minute} - ${transfer.dateTime.day}.${transfer.dateTime.month}.${transfer.dateTime.year}'),
-                                    Text(
-                                        '${transfer.fromAccount?.name ?? 'Стартовый баланс'}'),
-                                    Icon(Icons.arrow_downward),
-                                    Text('${transfer.toAccount.name}'),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          '${transfer.dateTime.hour}:${transfer.dateTime.minute} - ${transfer.dateTime.day}.${transfer.dateTime.month}.${transfer.dateTime.year}'),
+                                      Text(
+                                          '${transfer.fromAccount?.name ?? 'Стартовый баланс'}'),
+                                      Icon(Icons.arrow_downward),
+                                      Text('${transfer.toAccount.name}'),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  '${moneyService.convert(transfer.amount, 100)} руб.',
-                                  style: theme.textTheme.bodyLarge,
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      '${moneyService.convert(transfer.amount, 100)} руб.',
+                                      // '4 000 012,25  руб.',
+                                      style: theme.textTheme.bodyLarge,
+                                      softWrap: true,
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ),
                                 )
                               ],
                             ));

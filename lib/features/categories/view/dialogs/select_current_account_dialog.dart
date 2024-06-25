@@ -22,6 +22,16 @@ class _SelectCurrentAccountDialogState
   final MoneyService moneyService = MoneyService();
 
   @override
+  void initState() {
+    final accounts = getIt<CategoriesBloc>().state.listAccounts;
+    final currentAccount = getIt<CategoriesBloc>().state.currentAccount;
+    setState(() {
+      _selectedIndex = accounts.indexOf(currentAccount!);
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Dialog(

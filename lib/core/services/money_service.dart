@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class MoneyService {
   String convert(int summa, int convertValue) {
     int rub = 0;
@@ -6,7 +8,12 @@ class MoneyService {
     rub = summa ~/ convertValue;
     cop = summa % convertValue;
 
-    return '$rub,$cop';
+
+    final String formattedIntPart = NumberFormat('#,###', 'en_US')
+        .format(int.tryParse(rub.toString()) ?? 0)
+        .replaceAll(',', ' ');
+
+    return '$formattedIntPart,$cop';
   }
 
   int convertToKopecks(String input) {

@@ -60,28 +60,36 @@ class LegendWidget extends StatelessWidget {
                       Expanded(
                         child: Text(
                           key.name ?? 'Неизвестная категория',
-                          overflow: TextOverflow.ellipsis,
+                          // overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontSize: 20,
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
+                      Expanded(
+                        // padding: const EdgeInsets.only(left: 10),
                         child: state.typeTransaction ==
                                 Globals.typeTransactionsExpense
-                            ? Text(
-                                '-${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: Colors.red,
-                                  fontSize: 20,
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '-${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
+                                  // '-1111111111111111111111111111111111111111111111111 руб.',
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: Colors.red,
+                                    fontSize: 20,
+                                  ),
                                 ),
                               )
-                            : Text(
-                                '+${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: Colors.green,
-                                  fontSize: 20,
+                            : Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '+${moneyService.convert(state.showingMap[key]!.toInt(), 100)} руб.',
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: Colors.green,
+                                    fontSize: 20,
+                                  ),
+                                  textAlign: TextAlign.right,
                                 ),
                               ),
                       ),
